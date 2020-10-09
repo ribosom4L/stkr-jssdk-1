@@ -113,7 +113,7 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                                     return [2 /*return*/];
                                 });
                             }); })) ||
-                            console.warn('Unable to find Web3::publicConfigStore, page reload on account change won\'t work properly');
+                            console.warn("Unable to find Web3::publicConfigStore, page reload on account change won't work properly");
                         setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
                             var accounts, e_1;
                             return __generator(this, function (_a) {
@@ -182,8 +182,7 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                         // @ts-ignore
                         data = web3_utils_1.bytesToHex(data);
                     }
-                    return [2 /*return*/, this._web3.eth.personal.sign(data, address, '', function (error, signature) {
-                        })];
+                    return [2 /*return*/, this._web3.eth.personal.sign(data, address, '', function (error, signature) { })];
                 }
                 catch (e) {
                     console.error(e);

@@ -1,7 +1,7 @@
 import { KeyProvider } from './provider'
 import { Contract } from 'web3-eth-contract'
 
-const ABI_MICRO_POOL = require('./../contract/MicroPool.abi')
+const ABI_MICRO_POOL = require('./contract/MicroPool.abi')
 
 export interface ContractConfig {
   microPoolContract: string

@@ -57,7 +57,7 @@ var KeyProvider = /** @class */ (function () {
                     case 1:
                         accounts = _a.sent();
                         if (!accounts.length)
-                            throw new Error('Unable to find provider\'s accounts');
+                            throw new Error("Unable to find provider's accounts");
                         return [2 /*return*/, accounts[0]];
                 }
             });

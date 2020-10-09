@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContractManager = void 0;
-var ABI_MICRO_POOL = require('./../contract/MicroPool.abi');
+var ABI_MICRO_POOL = require('./contract/MicroPool.abi');
 var ContractManager = /** @class */ (function () {
     function ContractManager(_keyProvider, _contractConfig) {
         this._keyProvider = _keyProvider;
