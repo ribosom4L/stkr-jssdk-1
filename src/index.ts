@@ -7,9 +7,9 @@ class StkrSdk {
     providerConfig: ProviderConfig,
     contractConfig: ContractConfig
   ): Promise<StkrSdk> {
-    const keyProvider = new MetaMaskProvider(providerConfig),
-      contractManager = new ContractManager(keyProvider, contractConfig)
+    const keyProvider = new MetaMaskProvider(providerConfig)
     await keyProvider.connect()
+    const contractManager = new ContractManager(keyProvider, contractConfig)
     return new StkrSdk(keyProvider, contractManager)
   }
 

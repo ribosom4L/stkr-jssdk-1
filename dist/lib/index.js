@@ -49,10 +49,11 @@ var StkrSdk = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        keyProvider = new metamask_1.MetaMaskProvider(providerConfig), contractManager = new contract_1.ContractManager(keyProvider, contractConfig);
+                        keyProvider = new metamask_1.MetaMaskProvider(providerConfig);
                         return [4 /*yield*/, keyProvider.connect()];
                     case 1:
                         _a.sent();
+                        contractManager = new contract_1.ContractManager(keyProvider, contractConfig);
                         return [2 /*return*/, new StkrSdk(keyProvider, contractManager)];
                 }
             });
