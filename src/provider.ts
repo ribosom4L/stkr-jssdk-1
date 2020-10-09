@@ -1,5 +1,4 @@
 import { JsonRpcResponse } from 'web3-core-helpers/types'
-import { BN } from 'ethereumjs-util'
 import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
 import { Contract } from 'web3-eth-contract'
@@ -11,8 +10,8 @@ export interface ProviderConfig {
 
 export interface SendOptions {
   data?: string
-  gasLimit?: BN
-  value?: BN
+  gasLimit?: string
+  value?: string
 }
 
 export abstract class KeyProvider {

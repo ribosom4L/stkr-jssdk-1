@@ -2,7 +2,6 @@ import Web3 from 'web3'
 import { bytesToHex, numberToHex } from 'web3-utils'
 import { JsonRpcResponse } from 'web3-core-helpers/types'
 import { KeyProvider, ProviderConfig, SendOptions } from './provider'
-import { BN } from 'ethereumjs-util'
 
 export class MetaMaskProvider extends KeyProvider {
   static hasInPageSupport() {
@@ -37,7 +36,8 @@ export class MetaMaskProvider extends KeyProvider {
       this._currentAccount = unlockedAccounts[0]
       // @ts-ignore
       ;(ethereum.publicConfigStore &&
-        ethereum.publicConfigStore.on('update', async ({ selectedAddress, networkVersion }) => {
+        ethereum.publicConfigStore.on('update', async (config: any) => {
+          const { selectedAddress, networkVersion } = config
           console.log('Detected MetaMask account change: ', selectedAddress, networkVersion)
           if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
             console.log(
@@ -138,10 +138,10 @@ export class MetaMaskProvider extends KeyProvider {
     const tx = {
       chainId: numberToHex(this._providerConfig.chainId),
       data: sendOptions.data,
-      value: numberToHex(sendOptions.value || new BN(0)),
+      value: numberToHex(sendOptions.value || '0'),
       from: from,
       to: to,
-      gas: numberToHex(sendOptions.gasLimit || new BN(200000))
+      gas: numberToHex(sendOptions.gasLimit || '200000')
     }
     return new Promise(async (resolve, reject) => {
       console.log('Sending transaction via Web3: ', tx)
