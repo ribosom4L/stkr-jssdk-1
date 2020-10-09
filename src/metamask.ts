@@ -1,14 +1,10 @@
 import Web3 from 'web3'
 import { bytesToHex, numberToHex } from 'web3-utils'
-import { JsonRpcResponse } from 'web3-core-helpers'
-import { BN } from 'ethereumjs-util'
+import { JsonRpcResponse } from 'web3-core-helpers/types'
 import { KeyProvider, ProviderConfig, SendOptions } from './provider'
+import { BN } from 'ethereumjs-util'
 
 export class MetaMaskProvider extends KeyProvider {
-
-  _currentAccount: string | null = null
-  _web3: Web3 | null = null
-
   static hasInPageSupport() {
     // @ts-ignore
     return !!window.ethereum || !!window.web3
@@ -25,7 +21,7 @@ export class MetaMaskProvider extends KeyProvider {
     let web3: any = window.web3
     if (ethereum) {
       web3 = new Web3(ethereum)
-      if (ethereum.networkVersion !== this.providerConfig.networkId) {
+      if (ethereum.networkVersion !== this._providerConfig.networkId) {
         throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.')
       }
       try {
@@ -40,17 +36,25 @@ export class MetaMaskProvider extends KeyProvider {
       }
       this._currentAccount = unlockedAccounts[0]
       // @ts-ignore
-      ethereum.publicConfigStore && ethereum.publicConfigStore.on('update', async ({ selectedAddress, networkVersion }) => {
-        console.log('Detected MetaMask account change: ', selectedAddress, networkVersion)
-        if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
-          console.log(`You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${selectedAddress})`)
-          this._currentAccount = selectedAddress
-          window.location.reload()
-        } else if (this.providerConfig.networkId !== networkVersion) {
-          console.log(`You\'ve changed MetaMask network, reloading page (${this.providerConfig.networkId} != ${networkVersion})`)
-          window.location.reload()
-        }
-      }) || console.warn('Unable to find Web3::publicConfigStore, page reload on account change won\'t work properly')
+      ;(ethereum.publicConfigStore &&
+        ethereum.publicConfigStore.on('update', async ({ selectedAddress, networkVersion }) => {
+          console.log('Detected MetaMask account change: ', selectedAddress, networkVersion)
+          if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
+            console.log(
+              `You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${selectedAddress})`
+            )
+            this._currentAccount = selectedAddress
+            window.location.reload()
+          } else if (this._providerConfig.networkId !== networkVersion) {
+            console.log(
+              `You\'ve changed MetaMask network, reloading page (${this._providerConfig.networkId} != ${networkVersion})`
+            )
+            window.location.reload()
+          }
+        })) ||
+        console.warn(
+          "Unable to find Web3::publicConfigStore, page reload on account change won't work properly"
+        )
       setInterval(async () => {
         try {
           const accounts = await web3.eth.getAccounts()
@@ -59,7 +63,9 @@ export class MetaMaskProvider extends KeyProvider {
             window.location.reload()
           }
         } catch (e) {
-          console.error('Unable to fetch MetaMask accounts, looks like MetaMask locked, reloading page')
+          console.error(
+            'Unable to fetch MetaMask accounts, looks like MetaMask locked, reloading page'
+          )
           window.location.reload()
         }
       }, 3000)
@@ -70,7 +76,7 @@ export class MetaMaskProvider extends KeyProvider {
         throw new Error('Invalid MetaMask configuration provided');
       }*/
       web3 = new Web3(web3.currentProvider)
-      if (!web3 || web3.isConnected && !web3.isConnected()) {
+      if (!web3 || (web3.isConnected && !web3.isConnected())) {
         throw new Error('Invalid MetaMask configuration provided')
       }
     } else {
@@ -96,8 +102,10 @@ export class MetaMaskProvider extends KeyProvider {
         data = bytesToHex(data)
       }
       return this._web3.eth.personal.sign(
-        data, address, '', (error: Error, signature: string) => {
-        }
+        data,
+        address,
+        '',
+        (error: Error, signature: string) => {}
       )
     } catch (e) {
       console.error(e)
@@ -106,9 +114,7 @@ export class MetaMaskProvider extends KeyProvider {
       /* try to detect angry MetaMask messages */
       if (parts.length > 0) {
         /* special case for Firefox that doesn't return any errors, only extension stack trace */
-        if (message.includes('@moz-extension') &&
-          message.includes('Returned error: value')
-        ) {
+        if (message.includes('@moz-extension') && message.includes('Returned error: value')) {
           throw new Error('User denied message signature.')
         }
         /* cases for other browsers (tested in Chrome, Opera, Brave) */
@@ -130,7 +136,7 @@ export class MetaMaskProvider extends KeyProvider {
     const nonce = await this._web3?.eth.getTransactionCount(from)
     console.log('Nonce: ' + nonce)
     const tx = {
-      chainId: numberToHex(this.providerConfig.chainId),
+      chainId: numberToHex(this._providerConfig.chainId),
       data: sendOptions.data,
       value: numberToHex(sendOptions.value || new BN(0)),
       from: from,
@@ -140,21 +146,27 @@ export class MetaMaskProvider extends KeyProvider {
     return new Promise(async (resolve, reject) => {
       console.log('Sending transaction via Web3: ', tx)
       // @ts-ignore
-      this._web3?.currentProvider?.sendAsync({
-        method: 'eth_sendTransaction', params: [tx], from: from
-      }, (error: Error, result: JsonRpcResponse) => {
-        const { error: error2 } = result
-        if (error2) {
-          reject(error2)
-          return
-        } else if (error) {
-          reject(error)
-          return
+      this._web3?.currentProvider?.sendAsync(
+        {
+          method: 'eth_sendTransaction',
+          params: [tx],
+          from: from
+        },
+        (error: Error, result: JsonRpcResponse) => {
+          const { error: error2 } = result
+          if (error2) {
+            reject(error2)
+            return
+          } else if (error) {
+            reject(error)
+            return
+          }
+          resolve(result)
+        },
+        (error: any) => {
+          console.error(error)
         }
-        resolve(result)
-      }, (error: any) => {
-        console.error(error)
-      })
+      )
     })
   }
 }
