@@ -48,9 +48,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MetaMaskProvider = void 0;
-var web3_1 = require("web3");
+var web3_1 = __importDefault(require("web3"));
 var web3_utils_1 = require("web3-utils");
 var provider_1 = require("./provider");
 var MetaMaskProvider = /** @class */ (function (_super) {
@@ -69,8 +72,8 @@ var MetaMaskProvider = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        ethereum = window.ethereum;
-                        web3 = window.web3;
+                        ethereum = typeof window !== 'undefined' && window.ethereum;
+                        web3 = typeof window !== 'undefined' && window.web3;
                         if (!ethereum) return [3 /*break*/, 6];
                         web3 = new web3_1.default(ethereum);
                         if (ethereum.networkVersion !== this._providerConfig.networkId) {
@@ -151,7 +154,11 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                             }
                         }
                         else {
-                            throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!');
+                            web3 = new web3_1.default();
+                            if (!web3 || (web3.isConnected && !web3.isConnected())) {
+                                throw new Error('Invalid MetaMask configuration provided');
+                            }
+                            // throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!')
                         }
                         _a.label = 7;
                     case 7:

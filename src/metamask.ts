@@ -15,9 +15,9 @@ export class MetaMaskProvider extends KeyProvider {
 
   async connect(): Promise<void> {
     // @ts-ignore
-    let ethereum: any = window.ethereum
+    let ethereum: any = typeof window !== 'undefined' && window.ethereum
     // @ts-ignore
-    let web3: any = window.web3
+    let web3: any = typeof window !== 'undefined' && window.web3
     if (ethereum) {
       web3 = new Web3(ethereum)
       if (ethereum.networkVersion !== this._providerConfig.networkId) {
@@ -80,7 +80,11 @@ export class MetaMaskProvider extends KeyProvider {
         throw new Error('Invalid MetaMask configuration provided')
       }
     } else {
-      throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      web3 = new Web3()
+      if (!web3 || (web3.isConnected && !web3.isConnected())) {
+        throw new Error('Invalid MetaMask configuration provided')
+      }
+      // throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!')
     }
     this._web3 = web3
     return web3

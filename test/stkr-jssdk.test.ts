@@ -1,14 +1,24 @@
-import StkrSdk from "../src"
+import StkrSdk from '../src'
 
 /**
  * Dummy test
  */
-describe("Dummy test", () => {
-  it("works if true is truthy", () => {
+describe('Dummy test', () => {
+  it('works if true is truthy', () => {
     expect(true).toBeTruthy()
   })
 
-  it("DummyClass is instantiable", () => {
-    expect(new StkrSdk()).toBeInstanceOf(StkrSdk)
+  it('DummyClass is instantiable', async () => {
+    const stkr = await StkrSdk.factoryWithMetaMask(
+      {
+        networkId: '5',
+        chainId: '5'
+      },
+      {
+        microPoolContract: '',
+        ankrContract: ''
+      }
+    )
+    expect(stkr).toBeInstanceOf(StkrSdk)
   })
 })
