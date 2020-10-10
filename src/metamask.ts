@@ -20,25 +20,28 @@ export class MetaMaskProvider extends KeyProvider {
     let web3: any = typeof window !== 'undefined' && window.web3
     if (ethereum) {
       web3 = new Web3(ethereum)
-      if (ethereum.networkVersion !== this._providerConfig.networkId) {
-        throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.')
+      if (Number(ethereum.networkVersion) !== Number(this._providerConfig.networkId)) {
+        console.error(
+          `ethereum networks mismatched ${ethereum.networkVersion} != ${this._providerConfig.networkId}`
+        )
+        /*throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.')*/
       }
+      let unlockedAccounts: string[] = []
       try {
-        await ethereum.enable()
+        unlockedAccounts = await ethereum.send('eth_requestAccounts')
       } catch (error) {
         console.error(error)
         throw new Error('User denied access to account')
       }
-      const unlockedAccounts = await web3.eth.getAccounts()
       if (!unlockedAccounts.length || !unlockedAccounts[0]) {
         throw new Error('Unable to detect unlocked MetaMask account')
       }
       this._currentAccount = unlockedAccounts[0]
       // @ts-ignore
-      ;(ethereum.publicConfigStore &&
+      /*;(ethereum.publicConfigStore &&
         ethereum.publicConfigStore.on('update', async (config: any) => {
-          const { selectedAddress, networkVersion } = config
-          console.log('Detected MetaMask account change: ', selectedAddress, networkVersion)
+          const { isUnlocked, networkVersion, chainId } = config
+          console.log('Detected MetaMask account change: ', JSON.stringify(config))
           if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
             console.log(
               `You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${selectedAddress})`
@@ -54,7 +57,7 @@ export class MetaMaskProvider extends KeyProvider {
         })) ||
         console.warn(
           "Unable to find Web3::publicConfigStore, page reload on account change won't work properly"
-        )
+        )*/
       setInterval(async () => {
         try {
           const accounts = await web3.eth.getAccounts()

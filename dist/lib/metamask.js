@@ -77,7 +77,8 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                         if (!ethereum) return [3 /*break*/, 6];
                         web3 = new web3_1.default(ethereum);
                         if (ethereum.networkVersion !== this._providerConfig.networkId) {
-                            throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.');
+                            console.error("ethereum networks mismatched " + ethereum.networkVersion + " != " + this._providerConfig.networkId);
+                            /*throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.')*/
                         }
                         _a.label = 1;
                     case 1:
@@ -97,26 +98,27 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                             throw new Error('Unable to detect unlocked MetaMask account');
                         }
                         this._currentAccount = unlockedAccounts[0];
-                        (ethereum.publicConfigStore &&
-                            ethereum.publicConfigStore.on('update', function (config) { return __awaiter(_this, void 0, void 0, function () {
-                                var selectedAddress, networkVersion;
-                                var _a;
-                                return __generator(this, function (_b) {
-                                    selectedAddress = config.selectedAddress, networkVersion = config.networkVersion;
-                                    console.log('Detected MetaMask account change: ', selectedAddress, networkVersion);
-                                    if (((_a = this._currentAccount) === null || _a === void 0 ? void 0 : _a.toLowerCase()) !== selectedAddress.toLowerCase()) {
-                                        console.log("You've changed MetaMask account, reloading page (" + this._currentAccount + " != " + selectedAddress + ")");
-                                        this._currentAccount = selectedAddress;
-                                        window.location.reload();
-                                    }
-                                    else if (this._providerConfig.networkId !== networkVersion) {
-                                        console.log("You've changed MetaMask network, reloading page (" + this._providerConfig.networkId + " != " + networkVersion + ")");
-                                        window.location.reload();
-                                    }
-                                    return [2 /*return*/];
-                                });
-                            }); })) ||
-                            console.warn("Unable to find Web3::publicConfigStore, page reload on account change won't work properly");
+                        // @ts-ignore
+                        /*;(ethereum.publicConfigStore &&
+                          ethereum.publicConfigStore.on('update', async (config: any) => {
+                            const { isUnlocked, networkVersion, chainId } = config
+                            console.log('Detected MetaMask account change: ', JSON.stringify(config))
+                            if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
+                              console.log(
+                                `You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${selectedAddress})`
+                              )
+                              this._currentAccount = selectedAddress
+                              window.location.reload()
+                            } else if (this._providerConfig.networkId !== networkVersion) {
+                              console.log(
+                                `You\'ve changed MetaMask network, reloading page (${this._providerConfig.networkId} != ${networkVersion})`
+                              )
+                              window.location.reload()
+                            }
+                          })) ||
+                          console.warn(
+                            "Unable to find Web3::publicConfigStore, page reload on account change won't work properly"
+                          )*/
                         setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
                             var accounts, e_1;
                             return __generator(this, function (_a) {
