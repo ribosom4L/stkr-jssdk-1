@@ -1,4 +1,4 @@
-import StkrSdk from '../src'
+import StkrSdk from '../example/src/src'
 
 /**
  * Dummy test

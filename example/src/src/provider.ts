@@ -18,7 +18,7 @@ export abstract class KeyProvider {
   protected _currentAccount: string | null = null
   protected _web3: Web3 | null = null
 
-  protected constructor(protected _providerConfig: ProviderConfig) {}
+  protected constructor(protected providerConfig: ProviderConfig) {}
 
   createContract(abi: AbiItem[] | AbiItem, address: string): Contract {
     if (!this._web3) throw new Error('Web3 must be initialized')
@@ -29,10 +29,17 @@ export abstract class KeyProvider {
 
   abstract close(): Promise<void>
 
-  async currentAccount(): Promise<string> {
-    const accounts = await this.findAccounts()
-    if (!accounts.length) throw new Error("Unable to find provider's accounts")
-    return accounts[0]
+  currentAccount(): string {
+    if (!this._currentAccount) throw new Error('MetaMask is not activated');
+    return this._currentAccount;
+  }
+
+  currentChain(): string {
+    return this.providerConfig.chainId;
+  }
+
+  currentNetwork(): string {
+    return this.providerConfig.networkId;
   }
 
   abstract findAccounts(): Promise<string[]>
@@ -48,6 +55,8 @@ export abstract class KeyProvider {
   }
 
   abstract sign(data: Buffer | string | object, address: string): Promise<string>
+
+  abstract invoke(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse>
 
   abstract send(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse>
 }

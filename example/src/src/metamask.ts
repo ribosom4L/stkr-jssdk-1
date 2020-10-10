@@ -3,6 +3,17 @@ import { bytesToHex, numberToHex } from 'web3-utils'
 import { JsonRpcResponse } from 'web3-core-helpers/types'
 import { KeyProvider, ProviderConfig, SendOptions } from './provider'
 
+interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}
+
+interface ProviderMessage {
+  type: string;
+  data: unknown;
+}
+
 export class MetaMaskProvider extends KeyProvider {
   static hasInPageSupport() {
     // @ts-ignore
@@ -13,6 +24,24 @@ export class MetaMaskProvider extends KeyProvider {
     super(providerConfig)
   }
 
+  private async unlockAccounts(ethereum: any): Promise<string[]> {
+    let unlockedAccounts: string[] = []
+    try {
+      const { result } = await ethereum.send('eth_requestAccounts')
+      unlockedAccounts = result
+    } catch (error) {
+      console.error(error)
+      throw new Error('User denied access to account')
+    }
+    console.log(`unlocked metamask accounts: ${unlockedAccounts}`)
+    if (!unlockedAccounts.length || !unlockedAccounts[0]) {
+      throw new Error('Unable to detect unlocked MetaMask account')
+    }
+    this._currentAccount = unlockedAccounts[0]
+    console.log(`current account is ${this._currentAccount}`)
+    return unlockedAccounts
+  }
+
   async connect(): Promise<void> {
     // @ts-ignore
     let ethereum: any = typeof window !== 'undefined' && window.ethereum
@@ -20,58 +49,33 @@ export class MetaMaskProvider extends KeyProvider {
     let web3: any = typeof window !== 'undefined' && window.web3
     if (ethereum) {
       web3 = new Web3(ethereum)
-      if (Number(ethereum.networkVersion) !== Number(this._providerConfig.networkId)) {
+      if (Number(ethereum.networkVersion) !== Number(this.providerConfig.networkId)) {
         console.error(
-          `ethereum networks mismatched ${ethereum.networkVersion} != ${this._providerConfig.networkId}`
+          `ethereum networks mismatched ${ethereum.networkVersion} != ${this.providerConfig.networkId}`
         )
         /*throw new Error('MetaMask ethereum network mismatched, please check your MetaMask network.')*/
       }
-      let unlockedAccounts: string[] = []
-      try {
-        unlockedAccounts = await ethereum.send('eth_requestAccounts')
-      } catch (error) {
-        console.error(error)
-        throw new Error('User denied access to account')
-      }
-      if (!unlockedAccounts.length || !unlockedAccounts[0]) {
-        throw new Error('Unable to detect unlocked MetaMask account')
-      }
-      this._currentAccount = unlockedAccounts[0]
-      // @ts-ignore
-      /*;(ethereum.publicConfigStore &&
-        ethereum.publicConfigStore.on('update', async (config: any) => {
-          const { isUnlocked, networkVersion, chainId } = config
-          console.log('Detected MetaMask account change: ', JSON.stringify(config))
-          if (this._currentAccount?.toLowerCase() !== selectedAddress.toLowerCase()) {
-            console.log(
-              `You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${selectedAddress})`
-            )
-            this._currentAccount = selectedAddress
-            window.location.reload()
-          } else if (this._providerConfig.networkId !== networkVersion) {
-            console.log(
-              `You\'ve changed MetaMask network, reloading page (${this._providerConfig.networkId} != ${networkVersion})`
-            )
-            window.location.reload()
-          }
-        })) ||
-        console.warn(
-          "Unable to find Web3::publicConfigStore, page reload on account change won't work properly"
-        )*/
-      setInterval(async () => {
-        try {
-          const accounts = await web3.eth.getAccounts()
-          if (accounts.length === 0) {
-            console.log('You have locked MetaMask account, reloading page')
-            window.location.reload()
-          }
-        } catch (e) {
-          console.error(
-            'Unable to fetch MetaMask accounts, looks like MetaMask locked, reloading page'
+      await this.unlockAccounts(ethereum)
+      ethereum.on('accountsChanged', (accounts: string[]) => {
+        let newAccount: string | null = null
+        if (accounts.length > 0) {
+          newAccount = accounts[0]
+        }
+        if (newAccount?.toLowerCase() !== this._currentAccount?.toLowerCase()) {
+          console.log(
+            `You\'ve changed MetaMask account, reloading page (${this._currentAccount} != ${newAccount})`
           )
           window.location.reload()
         }
-      }, 3000)
+      })
+      ethereum.on('message', (message: ProviderMessage) => {
+        console.log(`message from MetaMask: ${JSON.stringify(message)}`)
+      })
+      ethereum.on('chainChanged', (chainId: string) => {
+        console.log(`detected MetMask chainId change to ${chainId}`)
+        window.location.reload()
+      })
+      ethereum.autoRefreshOnNetworkChange = false
     } else if (web3) {
       /* there several providers that emulates MetaMask behavior */
       /*const {isMetaMask} = window.web3.currentProvider;
@@ -112,7 +116,8 @@ export class MetaMaskProvider extends KeyProvider {
         data,
         address,
         '',
-        (error: Error, signature: string) => {}
+        (error: Error, signature: string) => {
+        }
       )
     } catch (e) {
       console.error(e)
@@ -137,13 +142,30 @@ export class MetaMaskProvider extends KeyProvider {
     }
   }
 
+  async invoke(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse> {
+    const tx = {
+      chainId: numberToHex(this.providerConfig.chainId),
+      data: sendOptions.data,
+      value: numberToHex(sendOptions.value || '0'),
+      from: from,
+      to: to
+    }
+    console.log('Calling transaction via Web3: ', tx)
+    // @ts-ignore
+    return await this._web3?.currentProvider?.request({
+      method: 'eth_sendTransaction',
+      params: [tx],
+      from: from
+    })
+  }
+
   async send(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse> {
     const gasPrice = await this._web3?.eth.getGasPrice()
     console.log('Gas Price: ' + gasPrice)
     const nonce = await this._web3?.eth.getTransactionCount(from)
     console.log('Nonce: ' + nonce)
     const tx = {
-      chainId: numberToHex(this._providerConfig.chainId),
+      chainId: numberToHex(this.providerConfig.chainId),
       data: sendOptions.data,
       value: numberToHex(sendOptions.value || '0'),
       from: from,
