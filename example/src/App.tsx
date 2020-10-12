@@ -33,22 +33,37 @@ class App extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    setInterval( () => {
+    setInterval(() => {
       // noinspection JSIgnoredPromiseFromCall
-      this.loadData();
-    }, 10000)
+      this.loadData()
+    }, 10000);
+
+    (async () => {
+      const stkr = await StkrSdk.factoryDefault(LOCAL_CONFIG)
+      this.setState((prev, props) => ({
+        sdk: stkr
+      }))
+    })()
   }
 
   async loadData() {
     if (!this?.state?.sdk) return
-    const providers = await this.state.sdk?.getApiGateway().getProviders()
-    const allMicroPools = await this.state.sdk?.getApiGateway().getMicroPools()
-    const myMicroPools = await this.state.sdk?.getApiGateway().getMicroPoolsByProvider(this.state.sdk.getKeyProvider().currentAccount())
-    const myEth = await this.state.sdk?.getApiGateway().getEtheremBalance(this.state.sdk?.getKeyProvider().currentAccount());
-    const myAnkr = await this.state.sdk?.getApiGateway().getAnkrBalance(this.state.sdk?.getKeyProvider().currentAccount());
-    this.setState((prev, props) => ({
-      providers, allMicroPools, myMicroPools, myEth, myAnkr
-    }))
+    if (this.state.sdk?.isConnected()) {
+      const providers = await this.state.sdk?.getApiGateway().getProviders()
+      const allMicroPools = await this.state.sdk?.getApiGateway().getMicroPools()
+      const myMicroPools = await this.state.sdk?.getApiGateway().getMicroPoolsByProvider(this.state.sdk.getKeyProvider().currentAccount())
+      const myEth = await this.state.sdk?.getApiGateway().getEtheremBalance(this.state.sdk?.getKeyProvider().currentAccount())
+      const myAnkr = await this.state.sdk?.getApiGateway().getAnkrBalance(this.state.sdk?.getKeyProvider().currentAccount())
+      this.setState((prev, props) => ({
+        providers, allMicroPools, myMicroPools, myEth, myAnkr
+      }))
+    } else {
+      const providers = await this.state.sdk?.getApiGateway().getProviders()
+      const allMicroPools = await this.state.sdk?.getApiGateway().getMicroPools()
+      this.setState((prev, props) => ({
+        providers, allMicroPools
+      }))
+    }
   }
 
   renderBody() {
@@ -88,14 +103,11 @@ class App extends React.Component<Props, State> {
       <div className="App">
         <header className="App-header">
           <div>
-            {this.state?.sdk ? this.renderBody() : null}
+            {this.state?.sdk && this.state?.sdk?.isConnected() ? this.renderBody() : null}
             <hr/>
           </div>
           <button onClick={async () => {
-            const stkr = await StkrSdk.factoryWithMetaMask(LOCAL_CONFIG)
-            this.setState((prev, props) => ({
-              sdk: stkr
-            }))
+            await this.state?.sdk?.connectMetaMask();
             await this.loadData();
           }}>
             CONNECT
@@ -104,7 +116,7 @@ class App extends React.Component<Props, State> {
           <div>
             <h5>All providers</h5>
             <hr/>
-            <table style={{fontSize: '12px'}}>
+            <table style={{ fontSize: '12px' }}>
               <thead>
               <tr>
                 <th>id</th>
@@ -122,7 +134,7 @@ class App extends React.Component<Props, State> {
                     <td>{provider.created}</td>
                     <td>{provider.banned}</td>
                   </tr>
-                );
+                )
               })}
               </tbody>
             </table>
@@ -131,7 +143,7 @@ class App extends React.Component<Props, State> {
           <div>
             <h5>All micropools</h5>
             <hr/>
-            <table style={{fontSize: '12px'}}>
+            <table style={{ fontSize: '12px' }}>
               <thead>
               <tr>
                 <th>id</th>
@@ -147,9 +159,9 @@ class App extends React.Component<Props, State> {
                     <td>{microPool.id}</td>
                     <td>{microPool.status}</td>
                     <td>{microPool.name}</td>
-                    <td>{microPool.provider === this.state?.sdk?.getKeyProvider().currentAccount() ? 'YES' : 'NO'}</td>
+                    <td>{microPool.provider === this.state?.sdk?.currentAccount() ? 'YES' : 'NO'}</td>
                   </tr>
-                );
+                )
               })}
               </tbody>
             </table>
