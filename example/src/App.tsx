@@ -39,7 +39,7 @@ class App extends React.Component<Props, State> {
     }, 10000);
 
     (async () => {
-      const stkr = await StkrSdk.factoryDefault(LOCAL_CONFIG)
+      const stkr = StkrSdk.factoryDefault(LOCAL_CONFIG)
       this.setState((prev, props) => ({
         sdk: stkr
       }))
