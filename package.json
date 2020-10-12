@@ -121,6 +121,7 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
+    "axios": "^0.20.0",
     "bip39": "^3.0.2",
     "ethereumjs-util": "^7.0.6",
     "ethereumjs-wallet": "^1.0.1",

@@ -1,6 +1,8 @@
 import { MetaMaskProvider } from './metamask'
-import { KeyProvider, ProviderConfig } from './provider'
-import { ContractConfig, ContractManager } from './contract'
+import { KeyProvider } from './provider'
+import { ContractManager } from './contract'
+import { ApiGateway } from './gateway'
+import { StkrConfig } from './config'
 
 interface ProviderEntity {
 }
@@ -8,27 +10,29 @@ interface ProviderEntity {
 interface MicroPoolEntity {
 }
 
-class StkrSdk {
+export class StkrSdk {
 
-  static async factoryWithMetaMask(
-    providerConfig: ProviderConfig,
-    contractConfig: ContractConfig
-  ): Promise<StkrSdk> {
-    const keyProvider = new MetaMaskProvider(providerConfig)
+  static async factoryWithMetaMask(stkrConfig: StkrConfig): Promise<StkrSdk> {
+    const keyProvider = new MetaMaskProvider(stkrConfig.providerConfig)
     await keyProvider.connect()
-    const contractManager = new ContractManager(keyProvider, contractConfig)
-    return new StkrSdk(keyProvider, contractManager)
+    const contractManager = new ContractManager(keyProvider, stkrConfig.contractConfig),
+      apiGateway = new ApiGateway(stkrConfig.gatewayConfig)
+    return new StkrSdk(keyProvider, contractManager, apiGateway)
   }
 
-  constructor(private keyProvider: KeyProvider, private contractManager: ContractManager) {
+  constructor(
+    private keyProvider: KeyProvider,
+    private contractManager: ContractManager,
+    private apiGateway: ApiGateway
+  ) {
   }
 
   public async getProviders(): Promise<ProviderEntity[]> {
-    return [];
+    return []
   }
 
   public async getMicroPools(): Promise<MicroPoolEntity[]> {
-    return [];
+    return []
   }
 
   public async createMicroPool(name: string): Promise<string> {
@@ -50,6 +54,8 @@ class StkrSdk {
   public getContractManager(): ContractManager {
     return this.contractManager
   }
-}
 
-export default StkrSdk
+  public getApiGateway(): ApiGateway {
+    return this.apiGateway;
+  }
+}
