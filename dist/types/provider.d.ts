@@ -28,4 +28,5 @@ export declare abstract class KeyProvider {
     abstract sign(data: Buffer | string | object, address: string): Promise<string>;
     abstract invoke(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse>;
     abstract send(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse>;
+    signLoginData(ttl: number): Promise<string>;
 }

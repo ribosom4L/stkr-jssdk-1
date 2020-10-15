@@ -182,8 +182,7 @@ var MetaMaskProvider = /** @class */ (function (_super) {
                         // @ts-ignore
                         data = web3_utils_1.bytesToHex(data);
                     }
-                    return [2 /*return*/, this._web3.eth.personal.sign(data, address, '', function (error, signature) {
-                        })];
+                    return [2 /*return*/, this._web3.eth.personal.sign(data, address, '')];
                 }
                 catch (e) {
                     console.error(e);

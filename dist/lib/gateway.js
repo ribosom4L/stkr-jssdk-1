@@ -44,6 +44,7 @@ var axios_1 = __importDefault(require("axios"));
 var ApiGateway = /** @class */ (function () {
     function ApiGateway(gatewayConfig) {
         this.gatewayConfig = gatewayConfig;
+        this.authorized = false;
         this.api = axios_1.default.create({
             baseURL: gatewayConfig.baseUrl,
             headers: {
@@ -53,6 +54,38 @@ var ApiGateway = /** @class */ (function () {
             responseType: 'json'
         });
     }
+    ApiGateway.prototype.login = function (loginData, address, ttl) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, status, statusText;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (this.authorized)
+                            throw new Error('You\'re already authorized');
+                        return [4 /*yield*/, this.api.post("/v1alpha/auth/login", {
+                                signature: loginData,
+                                address: address, ttl: ttl
+                            })];
+                    case 1:
+                        _a = _b.sent(), status = _a.status, statusText = _a.statusText;
+                        if (status !== 200)
+                            throw new Error("Unable to login: " + statusText);
+                        this.authorized = true;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ApiGateway.prototype.isAuthorized = function () {
+        return this.authorized;
+    };
+    ApiGateway.prototype.logout = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
     ApiGateway.prototype.getEtheremBalance = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, status, data, statusText;

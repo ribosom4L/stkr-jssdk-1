@@ -79,6 +79,18 @@ var KeyProvider = /** @class */ (function () {
             });
         });
     };
+    KeyProvider.prototype.signLoginData = function (ttl) {
+        return __awaiter(this, void 0, void 0, function () {
+            var currentTime, data;
+            return __generator(this, function (_a) {
+                if (ttl < 60 * 1000)
+                    throw new Error('TTL should be greater at least than 1 minute');
+                currentTime = Math.floor(new Date().getTime() / ttl) * ttl, data = "Stkr Login Message:\n" + currentTime;
+                console.log("Data to sign: " + data);
+                return [2 /*return*/, this.sign(data, this.currentAccount())];
+            });
+        });
+    };
     return KeyProvider;
 }());
 exports.KeyProvider = KeyProvider;

@@ -4,14 +4,14 @@ import { JsonRpcResponse } from 'web3-core-helpers/types'
 import { KeyProvider, ProviderConfig, SendOptions } from './provider'
 
 interface ProviderRpcError extends Error {
-  message: string;
-  code: number;
-  data?: unknown;
+  message: string
+  code: number
+  data?: unknown
 }
 
 interface ProviderMessage {
-  type: string;
-  data: unknown;
+  type: string
+  data: unknown
 }
 
 export class MetaMaskProvider extends KeyProvider {

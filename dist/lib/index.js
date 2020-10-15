@@ -79,6 +79,23 @@ var StkrSdk = /** @class */ (function () {
             });
         });
     };
+    StkrSdk.prototype.login = function (ttl) {
+        if (ttl === void 0) { ttl = 60 * 1000; }
+        return __awaiter(this, void 0, void 0, function () {
+            var data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.keyProvider)
+                            throw new Error('Key provider must be connected');
+                        return [4 /*yield*/, this.keyProvider.signLoginData(ttl)];
+                    case 1:
+                        data = _a.sent();
+                        return [2 /*return*/, this.apiGateway.login(data, this.keyProvider.currentAccount(), ttl)];
+                }
+            });
+        });
+    };
     StkrSdk.prototype.getProviders = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 
 export interface GatewayConfig {
   baseUrl: string
@@ -7,6 +7,14 @@ export interface GatewayConfig {
 export interface BalanceReply {
   available: string,
   timestamp: number,
+}
+
+export interface AuthorizationReply {
+  address?: string,
+  expiresAfter?: number,
+  timeToLive?: number
+  status: number,
+  statusText: string,
 }
 
 export type MicroPoolStatus =
@@ -47,17 +55,58 @@ export interface ProviderReply {
 
 export class ApiGateway {
 
+  private readonly defaultConfig: AxiosRequestConfig
   private api: AxiosInstance
+  private authorized: boolean = false
+  private token: string | null = null
 
   constructor(private gatewayConfig: GatewayConfig) {
-    this.api = axios.create({
+    this.defaultConfig = {
       baseURL: gatewayConfig.baseUrl,
       headers: {
         'Content-Type': 'application/json'
       },
       withCredentials: true,
       responseType: 'json'
+    }
+    this.api = axios.create(this.defaultConfig)
+    this.token = null
+  }
+
+  public createSidecarDownloadLink(sidecar: string): string {
+    return `${this.defaultConfig.baseURL}${this.api.getUri({ url: `/v1alpha/sidecar/download/${sidecar}` })}?token=${this.token}`
+  }
+
+  public async authorizeWithSignedData(token: string): Promise<AuthorizationReply> {
+    this.api = axios.create(Object.assign({}, this.defaultConfig, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }))
+    if (this.authorized) throw new Error('You\'re already authorized')
+    const { status, statusText, data } = await this.api.get<AuthorizationReply>(`/v1alpha/auth`)
+    if (status != 200) {
+      return { status, statusText }
+    }
+    this.authorized = true
+    this.token = token
+    return Object.assign({}, data, { status, statusText })
+  }
+
+  public async login(loginData: string, address: string, ttl: number): Promise<void> {
+    if (this.authorized) throw new Error('You\'re already authorized')
+    const { status, statusText } = await this.api.post(`/v1alpha/auth/login`, {
+      signature: loginData, address, ttl
     })
+    if (status !== 200) throw new Error(`Unable to login: ${statusText}`)
+    this.authorized = true
+  }
+
+  public isAuthorized(): boolean {
+    return this.authorized
+  }
+
+  public async logout(): Promise<void> {
   }
 
   public async getEtheremBalance(address: string): Promise<BalanceReply> {

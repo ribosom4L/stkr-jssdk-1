@@ -4,16 +4,11 @@ import { ContractManager } from './contract'
 import { ApiGateway } from './gateway'
 import { StkrConfig } from './config'
 
-interface ProviderEntity {
-}
+interface ProviderEntity {}
 
-interface MicroPoolEntity {
-}
-
-const LOCAL_STORAGE_AUTHORIZATION_TOKEN_KEY = '__stkr_authorization_token'
+interface MicroPoolEntity {}
 
 export class StkrSdk {
-
   static factoryDefault(stkrConfig: StkrConfig): StkrSdk {
     const apiGateway = new ApiGateway(stkrConfig.gatewayConfig)
     return new StkrSdk(stkrConfig, apiGateway)
@@ -22,11 +17,7 @@ export class StkrSdk {
   private keyProvider: KeyProvider | null = null
   private contractManager: ContractManager | null = null
 
-  constructor(
-    private stkrConfig: StkrConfig,
-    private apiGateway: ApiGateway
-  ) {
-  }
+  constructor(private stkrConfig: StkrConfig, private apiGateway: ApiGateway) {}
 
   public async connectMetaMask() {
     const metaMaskProvider = new MetaMaskProvider(this.stkrConfig.providerConfig)
@@ -40,32 +31,12 @@ export class StkrSdk {
     return this.keyProvider && this.contractManager
   }
 
-  public async disconnect() {
-  }
+  public async disconnect() {}
 
-  public async authorize(ttl: number = 60 * 60 * 1000): Promise<void> {
+  public async login(ttl: number = 60 * 1000): Promise<void> {
     if (!this.keyProvider) throw new Error('Key provider must be connected')
-    if (await this.isAuthorized()) return
-    const token = await this.keyProvider.signLoginData(ttl)
-    const { status, statusText } = await this.apiGateway.authorizeWithSignedData(token)
-    if (status !== 200) throw new Error(`Unable to authenticate user (#${status}) ${statusText}`)
-    localStorage[LOCAL_STORAGE_AUTHORIZATION_TOKEN_KEY] = token
-  }
-
-  public getSidecarDownloadLink(sidecar: string): string {
-    return this.apiGateway.createSidecarDownloadLink(sidecar);
-  }
-
-  public async isAuthorized(): Promise<boolean> {
-    if (this.apiGateway.isAuthorized()) return true
-    const existingToken = localStorage[LOCAL_STORAGE_AUTHORIZATION_TOKEN_KEY]
-    if (!existingToken) return false
-    const { status } = await this.apiGateway.authorizeWithSignedData(existingToken)
-    if (status !== 200) {
-      delete localStorage[LOCAL_STORAGE_AUTHORIZATION_TOKEN_KEY]
-      return false
-    }
-    return true
+    const data = await this.keyProvider.signLoginData(ttl)
+    return this.apiGateway.login(data, this.keyProvider.currentAccount(), ttl)
   }
 
   public async getProviders(): Promise<ProviderEntity[]> {

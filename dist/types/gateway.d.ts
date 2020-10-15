@@ -34,7 +34,11 @@ export interface ProviderReply {
 export declare class ApiGateway {
     private gatewayConfig;
     private api;
+    private authorized;
     constructor(gatewayConfig: GatewayConfig);
+    login(loginData: string, address: string, ttl: number): Promise<void>;
+    isAuthorized(): boolean;
+    logout(): Promise<void>;
     getEtheremBalance(address: string): Promise<BalanceReply>;
     getAnkrBalance(address: string): Promise<BalanceReply>;
     getMicroPools(page?: number, size?: number): Promise<MicroPoolReply[]>;

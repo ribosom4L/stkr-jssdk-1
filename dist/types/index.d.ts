@@ -16,6 +16,7 @@ export declare class StkrSdk {
     connectMetaMask(): Promise<void>;
     isConnected(): ContractManager | null;
     disconnect(): Promise<void>;
+    login(ttl?: number): Promise<void>;
     getProviders(): Promise<ProviderEntity[]>;
     getMicroPools(): Promise<MicroPoolEntity[]>;
     createMicroPool(name: string): Promise<string>;

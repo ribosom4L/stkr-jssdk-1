@@ -18,8 +18,7 @@ export abstract class KeyProvider {
   protected _currentAccount: string | null = null
   protected _web3: Web3 | null = null
 
-  protected constructor(protected providerConfig: ProviderConfig) {
-  }
+  protected constructor(protected providerConfig: ProviderConfig) {}
 
   createContract(abi: AbiItem[] | AbiItem, address: string): Contract {
     if (!this._web3) throw new Error('Web3 must be initialized')
@@ -62,11 +61,10 @@ export abstract class KeyProvider {
   abstract send(from: string, to: string, sendOptions: SendOptions): Promise<JsonRpcResponse>
 
   async signLoginData(ttl: number): Promise<string> {
-    const currentTime = Math.floor(new Date().getTime()),
-      expiresAfter = currentTime + ttl;
-    const data = `Stkr Login Message:\n${expiresAfter}`,
-      signature = await this.sign(data, this.currentAccount())
-    const formData = `signature=${signature}&address=${this.currentAccount()}&expires=${expiresAfter}`;
-    return new Buffer(formData, 'utf-8').toString('base64');
+    if (ttl < 60 * 1000) throw new Error('TTL should be greater at least than 1 minute')
+    const currentTime = Math.floor(new Date().getTime() / ttl) * ttl,
+      data = `Stkr Login Message:\n${currentTime}`
+    console.log(`Data to sign: ` + data)
+    return this.sign(data, this.currentAccount())
   }
 }
