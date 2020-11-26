@@ -1,76 +1,74 @@
-import { MetaMaskProvider } from './metamask'
-import { KeyProvider } from './provider'
-import { ContractManager } from './contract'
-import { ApiGateway } from './gateway'
-import { StkrConfig } from './config'
+import Web3 from 'web3'
+import { ContractFactory } from './contract_factory'
+import { Contract, SendOptions } from 'web3-eth-contract'
+import { PromiEvent } from 'web3-core'
+import * as BN from 'bn.js'
 
-interface ProviderEntity {}
+export interface StkrInterface {
+  stake(options: SendOptions): PromiEvent<Contract>
+  unstake(options?: SendOptions): PromiEvent<Contract>
+  claim(options?: SendOptions): PromiEvent<Contract>
+  claimableBalance(address: string): Promise<number>
+  aETHPrice(): Promise<number>
+}
 
-interface MicroPoolEntity {}
+export class Stkr implements StkrInterface {
+  readonly contractFactory: ContractFactory
 
-export class StkrSdk {
-  static factoryDefault(stkrConfig: StkrConfig): StkrSdk {
-    const apiGateway = new ApiGateway(stkrConfig.gatewayConfig)
-    return new StkrSdk(stkrConfig, apiGateway)
+  constructor(private web3: Web3, network: string) {
+    this.contractFactory = new ContractFactory(web3, network)
   }
 
-  private keyProvider: KeyProvider | null = null
-  private contractManager: ContractManager | null = null
-
-  constructor(private stkrConfig: StkrConfig, private apiGateway: ApiGateway) {}
-
-  public async connectMetaMask() {
-    const metaMaskProvider = new MetaMaskProvider(this.stkrConfig.providerConfig)
-    await metaMaskProvider.connect()
-    const contractManage = new ContractManager(metaMaskProvider, this.stkrConfig.contractConfig)
-    this.keyProvider = metaMaskProvider
-    this.contractManager = contractManage
+  /**
+   * @param contractName
+   * @return Contract
+   */
+  public getContract(contractName: string): Contract {
+    return this.contractFactory.getContract(contractName)
   }
 
-  public isConnected() {
-    return this.keyProvider && this.contractManager
+  /**
+   * Stake given amount for user
+   * @param options
+   */
+  public stake(options: SendOptions): PromiEvent<Contract> {
+    return this.getContract(this.contractFactory.GlobalPool).methods['stake']().send(options)
   }
 
-  public async disconnect() {}
-
-  public async getProviders(): Promise<ProviderEntity[]> {
-    return []
+  /**
+   * Claim user's rewards
+   * @param options
+   */
+  public claim(options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract(this.contractFactory.GlobalPool).methods['claim']().send(options)
   }
 
-  public async getMicroPools(): Promise<MicroPoolEntity[]> {
-    return []
+  /**
+   * Unstake user's pending balance
+   * @param options
+   */
+  public unstake(options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract(this.contractFactory.GlobalPool).methods['unstake']().send(options)
   }
 
-  public async createMicroPool(name: string): Promise<string> {
-    if (!this.contractManager) throw new Error('Key provider must be connected')
-    const txHash = await this.contractManager.initializePool(name)
-    console.log(`created new micro pool, tx hash is ${txHash}`)
-    return txHash
+  /**
+   * Get current aeth price as ethereum
+   */
+  public async aETHPrice(): Promise<number> {
+    const ratio: BN = await this.getContract(this.contractFactory.AETH).methods['ratio']().call()
+
+    return Number((1 / Number(this.web3.utils.fromWei(ratio))).toFixed(2))
   }
 
-  public async getMicroPool(poolIndex: string | number): Promise<any> {
-    if (!this.contractManager) throw new Error('Key provider must be connected')
-    const result = await this.contractManager.poolDetails(`${poolIndex}`)
-    console.log(`fetched micro pool details, result is ${result}`)
-    return result
-  }
+  /**
+   * Get claimable balance of user
+   * @param address
+   */
+  public async claimableBalance(address: string): Promise<number> {
+    const balance: BN = await this.getContract(this.contractFactory.GlobalPool)
+      .methods['claimableRewardOf'](address)
+      .call()
 
-  public currentAccount(): string {
-    if (!this.keyProvider) return ''
-    return this.keyProvider?.currentAccount()
-  }
-
-  public getKeyProvider(): KeyProvider {
-    if (!this.keyProvider) throw new Error('Key provider must be connected')
-    return this.keyProvider
-  }
-
-  public getContractManager(): ContractManager {
-    if (!this.contractManager) throw new Error('Key provider must be connected')
-    return this.contractManager
-  }
-
-  public getApiGateway(): ApiGateway {
-    return this.apiGateway
+    return Number(this.web3.utils.fromWei(balance))
   }
 }
