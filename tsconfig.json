@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es2017",
     "module":"es2015",
     "lib": ["es2015", "es2016", "es2017", "dom"],
     "strict": true,
@@ -12,11 +12,13 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
     "outDir": "dist/lib",
+    "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "esModuleInterop": true
   },
   "include": [
-    "src"
+    "example/src/src"
   ]
 }
