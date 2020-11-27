@@ -24,7 +24,7 @@ contract with web3. And return types almost same with web3 contract calls but
 they may be changed / edited to provide simplicity for applications.
 
 ```js
-import Stkr from "@ankr/stkr-jssdk"
+import { Stkr } from "@ankr/stkr-jssdk"
 import Web3 from "web3"
 
 const web3 = new Web3("https://eth-api.ankr.com")
