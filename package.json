@@ -1,15 +1,14 @@
 {
   "name": "stkr-jssdk",
-  "version": "0.0.0",
+  "version": "1.0.5",
   "description": "",
   "keywords": [],
-  "main": "dist/stkr-jssdk.umd.js",
-  "module": "dist/stkr-jssdk.es5.js",
-  "typings": "dist/types/stkr-jssdk.d.ts",
+  "main": "dist/lib/index.js",
+  "module": "dist/lib",
+  "typings": "dist/types",
   "files": [
     "dist"
   ],
-  "author": "Dmitry Savonin <dmitry@anrk.com>",
   "repository": {
     "type": "git",
     "url": ""
@@ -19,9 +18,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'example/src/src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint  --project tsconfig.json",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
+    "build": "tsc --module commonjs",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",

@@ -12,7 +12,7 @@ export interface StkrInterface {
   aETHPrice(): Promise<number>
 }
 
-export class Stkr implements StkrInterface {
+export default class Stkr implements StkrInterface {
   readonly contractFactory: ContractFactory
 
   constructor(private web3: Web3, network: string) {

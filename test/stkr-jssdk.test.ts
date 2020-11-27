@@ -1,4 +1,4 @@
-import { Stkr, StkrInterface } from '../src'
+import Stkr, { StkrInterface } from '../src'
 import Web3 from 'web3'
 import { Contract } from 'web3-eth-contract'
 import addresses from '../contract/addresses/goerli.json'
