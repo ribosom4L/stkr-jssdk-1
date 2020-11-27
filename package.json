@@ -1,8 +1,15 @@
 {
-  "name": "stkr-jssdk",
-  "version": "1.0.5",
-  "description": "",
-  "keywords": [],
+  "name": "@ankr.com/stkr-jssdk",
+  "version": "1.0.4",
+  "description": "stkr js sdk to interact with stkr.io directly",
+  "keywords": [
+    "ankr",
+    "ankr.com",
+    "stkr",
+    "stkr.io",
+    "eth 2.0",
+    "staking"
+  ],
   "main": "dist/lib/index.js",
   "module": "dist/lib",
   "typings": "dist/types",
