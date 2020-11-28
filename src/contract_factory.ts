@@ -8,7 +8,7 @@ export class ContractFactory {
 
   readonly addresses: any
 
-  readonly contracts: any = {}
+  readonly contracts: object = {}
 
   constructor(private web3: Web3, network: string) {
     // Todo: check file exists
@@ -20,6 +20,7 @@ export class ContractFactory {
    * @param contractName
    */
   public getContract(contractName: string): Contract {
+    // If contract created before, read from contracts object
     if (this.contracts.hasOwnProperty(contractName)) {
       return this.contracts[contractName]
     }
@@ -27,7 +28,8 @@ export class ContractFactory {
     const contractPath = join(__dirname, '../contract/' + contractName + '.json')
 
     const address = this.addresses[contractName]
+    this.contracts[contractName] = new this.web3.eth.Contract(require(contractPath), address)
 
-    return new this.web3.eth.Contract(require(contractPath), address)
+    return this.contracts[contractName]
   }
 }
