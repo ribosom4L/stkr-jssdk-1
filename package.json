@@ -1,6 +1,6 @@
 {
   "name": "@ankr.com/stkr-jssdk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "stkr js sdk to interact with stkr.io directly",
   "keywords": [
     "ankr",
