@@ -32,7 +32,8 @@
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
     "precommit": "lint-staged",
-    "preversion": "npm run lint"
+    "preversion": "npm run lint",
+    "prepublish": "tsc"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
