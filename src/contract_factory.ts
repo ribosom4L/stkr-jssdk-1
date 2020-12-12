@@ -1,35 +1,130 @@
 import Web3 from 'web3'
 import { join } from 'path'
-import { Contract } from 'web3-eth-contract'
+import { Contract, SendOptions } from 'web3-eth-contract'
+import { PromiEvent } from 'web3-core'
+import * as BN from 'bn.js'
+import { IGlobalPool, IAnkrETH } from './interfaces'
+import { GlobalPoolEvents } from './events'
 
-export class ContractFactory {
-  readonly AETH = 'AETH'
-  readonly GlobalPool = 'GlobalPool'
-
+export abstract class BaseContract {
   readonly addresses: any
 
-  readonly contracts: object = {}
+  protected web3ContractInstance: Contract
 
-  constructor(private web3: Web3, network: string) {
-    // Todo: check file exists
-    this.addresses = require('../contract/addresses/' + network + '.json')
+  constructor(protected web3: Web3, network: string) {
+    const addressPath = '../contract/addresses/' + network + '.json'
+    // Get contract addresses
+    this.addresses = require(addressPath)
   }
 
   /**
    * Get given contract for instance network
    * @param contractName
    */
-  public getContract(contractName: string): Contract {
-    // If contract created before, read from contracts object
-    if (this.contracts.hasOwnProperty(contractName)) {
-      return this.contracts[contractName]
-    }
+  public getContract(): Contract {
+
+    const contractName = this.getName()
+
+    if (this.web3ContractInstance) return this.web3ContractInstance
 
     const contractPath = join(__dirname, '../contract/' + contractName + '.json')
 
     const address = this.addresses[contractName]
-    this.contracts[contractName] = new this.web3.eth.Contract(require(contractPath), address)
+    this.web3ContractInstance = new this.web3.eth.Contract(require(contractPath), address)
 
-    return this.contracts[contractName]
+    return this.web3ContractInstance
+  }
+
+  abstract getName(): string;
+}
+
+export class AnkrETH extends BaseContract implements IAnkrETH {
+
+  /**
+   * Name of contract
+   */
+  public getName(): string {
+    return 'AETH'
+  }
+
+  /**
+   * Get current aeth price as ethereum
+   */
+  public async tokenPrice(): Promise<number> {
+    const ratio: BN = await this.ratio()
+
+    return Number(1 / Number(this.web3.utils.fromWei(ratio)))
+  }
+
+  async ratio(): Promise<BN> {
+    return this.getContract().methods['ratio']().call()
+  }
+
+  balanceOf(address: string): Promise<BN> {
+    return this.getContract().methods['balanceOf'](address).call()
+  }
+
+  totalSupply(): Promise<BN> {
+    return this.getContract().methods['totalSupply']().call()
+  }
+}
+
+export class GlobalPool extends BaseContract implements IGlobalPool {
+
+  readonly events: GlobalPoolEvents
+
+  constructor(web3: Web3, network: string) {
+    super(web3, network);
+
+    this.events = new GlobalPoolEvents(this.getContract())
+  }
+
+  getName(): string {
+    return 'GlobalPool';
+  }
+
+  /**
+   * Stake given amount for user
+   * @param options
+   */
+  public stake(options: SendOptions): PromiEvent<Contract> {
+    return this.getContract().methods['stake']().send(options)
+  }
+
+  /**
+   * Claim user's rewards
+   * @param options
+   */
+  public claim(options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract().methods['claim']().send(options)
+  }
+
+  /**
+   * Unstake user's pending balance
+   * @param options
+   */
+  public unstake(options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract().methods['unstake']().send(options)
+  }
+
+  /**
+   * Get claimable balance of user
+   * @param address
+   */
+  public async claimableBalance(address: string): Promise<BN> {
+    return this.getContract()
+      .methods['claimableRewardOf'](address)
+      .call()
+  }
+
+}
+
+export default class ContractFactory {
+  readonly ankrETH: AnkrETH
+  readonly globalPool: GlobalPool
+
+  constructor(web3: Web3, network: string) {
+    this.ankrETH = new AnkrETH(web3, network)
+    this.globalPool = new GlobalPool(web3, network)
   }
 }
