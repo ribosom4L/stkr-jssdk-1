@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import { join } from 'path'
 import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
 import * as BN from 'bn.js'
@@ -9,12 +8,13 @@ import { GlobalPoolEvents } from './events'
 export abstract class BaseContract {
   readonly addresses: any
 
-  protected web3ContractInstance: Contract
+  protected web3ContractInstance
 
   constructor(protected web3: Web3, network: string) {
     const addressPath = '../contract/addresses/' + network + '.json'
     // Get contract addresses
-    this.addresses = require(addressPath)
+    // eslint-disable-next-line
+    this.addresses = require('../contract/addresses/' + network + '.json')
   }
 
   /**
@@ -27,15 +27,17 @@ export abstract class BaseContract {
 
     if (this.web3ContractInstance) return this.web3ContractInstance
 
-    const contractPath = join(__dirname, '../contract/' + contractName + '.json')
-
     const address = this.addresses[contractName]
-    this.web3ContractInstance = new this.web3.eth.Contract(require(contractPath), address)
+    this.web3ContractInstance = new this.web3.eth.Contract(require('../contract/' + contractName + '.json'), address)
 
     return this.web3ContractInstance
   }
 
   abstract getName(): string;
+
+  public getWeb3ContractInstance(): Contract {
+    return this.web3ContractInstance
+  }
 }
 
 export class AnkrETH extends BaseContract implements IAnkrETH {
@@ -57,15 +59,15 @@ export class AnkrETH extends BaseContract implements IAnkrETH {
   }
 
   async ratio(): Promise<BN> {
-    return this.getContract().methods['ratio']().call()
+    return this.getContract().methods.ratio().call()
   }
 
   balanceOf(address: string): Promise<BN> {
-    return this.getContract().methods['balanceOf'](address).call()
+    return this.getContract().methods.balanceOf(address).call()
   }
 
   totalSupply(): Promise<BN> {
-    return this.getContract().methods['totalSupply']().call()
+    return this.getContract().methods.totalSupply().call()
   }
 }
 
@@ -74,13 +76,13 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
   readonly events: GlobalPoolEvents
 
   constructor(web3: Web3, network: string) {
-    super(web3, network);
+    super(web3, network)
 
     this.events = new GlobalPoolEvents(this.getContract())
   }
 
   getName(): string {
-    return 'GlobalPool';
+    return 'GlobalPool'
   }
 
   /**
@@ -88,7 +90,7 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
    * @param options
    */
   public stake(options: SendOptions): PromiEvent<Contract> {
-    return this.getContract().methods['stake']().send(options)
+    return this.getContract().methods.stake().send(options)
   }
 
   /**
@@ -96,7 +98,7 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
    * @param options
    */
   public claim(options?: SendOptions): PromiEvent<Contract> {
-    return this.getContract().methods['claim']().send(options)
+    return this.getContract().methods.claim().send(options)
   }
 
   /**
@@ -104,7 +106,7 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
    * @param options
    */
   public unstake(options?: SendOptions): PromiEvent<Contract> {
-    return this.getContract().methods['unstake']().send(options)
+    return this.getContract().methods.unstake().send(options)
   }
 
   /**
@@ -113,7 +115,7 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
    */
   public async claimableBalance(address: string): Promise<BN> {
     return this.getContract()
-      .methods['claimableRewardOf'](address)
+      .methods.claimableRewardOf(address)
       .call()
   }
 
@@ -123,8 +125,17 @@ export default class ContractFactory {
   readonly ankrETH: AnkrETH
   readonly globalPool: GlobalPool
 
-  constructor(web3: Web3, network: string) {
-    this.ankrETH = new AnkrETH(web3, network)
-    this.globalPool = new GlobalPool(web3, network)
+  constructor(web3: Web3, chain: string | number) {
+    switch (String(chain)) {
+      case "5":
+        chain = "goerli"
+        break;
+      case "0":
+        chain = "mainnet"
+        break;
+    }
+
+    this.ankrETH = new AnkrETH(web3, String(chain))
+    this.globalPool = new GlobalPool(web3, String(chain))
   }
 }

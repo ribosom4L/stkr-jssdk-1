@@ -14,8 +14,8 @@ const api = 'https://eth-goerli-01.dccn.ankr.com'
 describe('Stkr Contract Tests', () => {
   let instance: Stkr
   let web3: Web3
-  let globalPool: Contract
-  let aETH: Contract
+  let globalPool
+  let aETH
 
   beforeEach(() => {
     web3 = new Web3(new Web3.providers.HttpProvider(api))
@@ -40,9 +40,8 @@ describe('Stkr Contract Tests', () => {
   it('Should fetch aETH ratio correctly', async () => {
     const realRatio = await aETH.methods.ratio().call()
     const expected = 1 / Number(web3.utils.fromWei(realRatio))
-
-    expect(await instance.contracts.ankrETH.tokenPrice()).toBe(expected)
     expect(await instance.contracts.ankrETH.ratio()).toBe(realRatio)
+    expect(await instance.contracts.ankrETH.tokenPrice()).toBe(expected)
   })
 
   it('Should fetch total supply correctly', async () => {
@@ -73,5 +72,4 @@ describe('Stkr Contract Tests', () => {
 
     await instance.contracts.globalPool.unstake(options)
   })
-
 })
