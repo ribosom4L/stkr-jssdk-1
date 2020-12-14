@@ -1,6 +1,6 @@
 import * as BN from 'bn.js'
 import { Contract, SendOptions } from 'web3-eth-contract'
-import { PromiEvent } from 'web3-core'
+import { EventLog, PromiEvent } from 'web3-core'
 
 export interface IAnkrETH {
   ratio(): Promise<BN>
@@ -20,6 +20,17 @@ export interface IGlobalPool {
   unstake(options?: SendOptions): PromiEvent<Contract>
 
   claimableBalance(address: string): Promise<BN>
+}
+
+export interface ContractEvent<T> extends EventLog{
+  returnValues: T
+}
+
+export interface SubscribeEvent<T> {
+  on(
+    type: 'data',
+    handler: (receipt: ContractEvent<T>) => void
+  );
 }
 
 export interface PoolOngoing {
