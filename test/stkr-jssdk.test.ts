@@ -24,7 +24,7 @@ describe('Stkr Contract Tests', () => {
     web3.eth.accounts.wallet.add(account)
     web3.defaultAccount = account.address
 
-    instance = new Stkr(web3, 'goerli')
+    instance = new Stkr(web3, "5")
 
     // @ts-ignore
     globalPool = new web3.eth.Contract(GlobalPool, addresses.GlobalPool)
