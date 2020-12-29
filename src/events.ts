@@ -11,12 +11,15 @@ import {
   ProviderToppedUpEth,
   ProviderToppedUpAnkr,
   ProviderExited,
-  SubscribeEvent
+  SubscribeEvent, ProposalFinished, Vote, Propose
 } from './interfaces'
 
-export class GlobalPoolEvents {
-  constructor(private contract: Contract) {
+export class EventBase {
+  constructor(protected contract: Contract) {
   }
+}
+
+export class GlobalPoolEvents extends EventBase{
 
   async getPastPoolOnGoing(options: PastEventOptions | {}): Promise<ContractEvent<PoolOngoing>[]> {
     // @ts-ignore
@@ -106,5 +109,34 @@ export class GlobalPoolEvents {
 
   StakeRemoved(options: EventOptions | {}): SubscribeEvent<StakeRemoved> {
     return this.contract.events.StakeRemoved(options)
+  }
+}
+
+export class GovernanceEvents extends EventBase{
+  async getPastProposalFinished(options: PastEventOptions | {}): Promise<ContractEvent<ProposalFinished>[]> {
+    // @ts-ignore
+    return this.contract.getPastEvents('ProposalFinished', options)
+  }
+
+  async getPastVote(options: PastEventOptions | {}): Promise<ContractEvent<Vote>[]> {
+    // @ts-ignore
+    return this.contract.getPastEvents('Vote', options)
+  }
+
+  async getPastPropose(options: PastEventOptions | {}): Promise<ContractEvent<Propose>[]> {
+    // @ts-ignore
+    return this.contract.getPastEvents('Propose', options)
+  }
+
+  ProposalFinished(options: EventOptions | {}): SubscribeEvent<ProposalFinished> {
+    return this.contract.events.ProposalFinished(options)
+  }
+
+  Vote(options: EventOptions | {}): SubscribeEvent<Vote> {
+    return this.contract.events.Vote(options)
+  }
+
+  Propose(options: EventOptions | {}): SubscribeEvent<Propose> {
+    return this.contract.events.Propose(options)
   }
 }

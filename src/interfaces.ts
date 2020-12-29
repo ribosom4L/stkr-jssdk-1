@@ -22,6 +22,11 @@ export interface IGlobalPool {
   claimableBalance(address: string): Promise<BN>
 }
 
+export interface IGovernance {
+  propose(timeSpan: number, topic: string, content: string, options?: SendOptions): PromiEvent<Contract>
+  vote(proposalId: string, vote: string, options?: SendOptions): PromiEvent<Contract>
+}
+
 export interface ContractEvent<T> extends EventLog{
   returnValues: T
 }
@@ -80,4 +85,25 @@ export interface StakePending {
 export interface StakeRemoved {
   staker: string,
   amount: number
+}
+
+export interface ProposalFinished {
+  ID: string,
+  accepted: boolean,
+  blockNumber: number
+}
+
+export interface Vote {
+  holder: string,
+  ID: string,
+  vote: string,
+  votes: number
+}
+
+export interface Propose {
+  proposer: string,
+  ID: string,
+  topic: string,
+  content: string,
+  timeSpan: number
 }
