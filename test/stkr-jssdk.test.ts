@@ -3,10 +3,13 @@ import Web3 from 'web3'
 import { Contract } from 'web3-eth-contract'
 import addresses from '../contract/addresses/goerli.json'
 import GlobalPool from '../contract/GlobalPool.json'
+import Governance from '../contract/Governance.json'
 import AETH from '../contract/AETH.json'
-import ContractFactory from '../src/contract_factory'
+import ANKR from '../contract/ANKR.json'
+import AnkrDeposit from '../contract/AnkrDeposit.json'
+import ContractFactory  from '../src/contract_factory'
 
-jest.setTimeout(60000)
+jest.setTimeout(180000)
 
 const testKey = '80e14c7c1d43c0293e4b6dcf8682b87c28832ab6b3d13ea4c4813518614865be'
 const api = 'https://eth-goerli-01.dccn.ankr.com'
@@ -14,8 +17,7 @@ const api = 'https://eth-goerli-01.dccn.ankr.com'
 describe('Stkr Contract Tests', () => {
   let instance: Stkr
   let web3: Web3
-  let globalPool
-  let aETH
+  let globalPool, aETH, governance, ankr
 
   beforeEach(() => {
     web3 = new Web3(new Web3.providers.HttpProvider(api))
@@ -29,9 +31,13 @@ describe('Stkr Contract Tests', () => {
     // @ts-ignore
     globalPool = new web3.eth.Contract(GlobalPool, addresses.GlobalPool)
     // @ts-ignore
+    governance = new web3.eth.Contract(Governance, addresses.AETH)
+    // @ts-ignore
     aETH = new web3.eth.Contract(AETH, addresses.AETH)
+    // @ts-ignore
+    ankr = new web3.eth.Contract(ANKR, addresses.ANKR)
   })
-
+  //
   it('Should fetch claimable balance correctly', async () => {
     const expected = Number(await globalPool.methods.claimableRewardOf(web3.defaultAccount).call())
     expect(expected).toEqual(Number(await instance.contracts.globalPool.claimableBalance(web3.defaultAccount as string)))
@@ -59,6 +65,7 @@ describe('Stkr Contract Tests', () => {
   it('should stake correctly', async () => {
     const value = web3.utils.toWei('0.5')
     const options: any = { value, from: web3.defaultAccount as string }
+
     options.gas = await globalPool.methods.stake().estimateGas(options)
 
     const tx = await instance.contracts.globalPool.stake(options)
@@ -71,5 +78,40 @@ describe('Stkr Contract Tests', () => {
     options.gas = await globalPool.methods.unstake().estimateGas(options)
 
     await instance.contracts.globalPool.unstake(options)
+  })
+
+  let proposeId
+
+  it('should propose', async (done) => {
+    const topic = "test topic"
+    const content = "Test content"
+    const options: any = { from: web3.defaultAccount as string, gas: "500000" }
+
+    // claim ankr
+    await ankr.methods.faucet5m().send(options)
+    await ankr.methods.faucet().send(options)
+    await ankr.methods.approve(addresses.AnkrDeposit, web3.utils.toWei("5100000")).send(options)
+
+    // options.gas = await governance.methods.propose(4 * 24 * 60 * 60, topic, content)
+
+    const tx = await instance.contracts.governance.propose(4 * 24 * 60 * 60, topic, content, options)
+
+    expect(tx.events.Propose).toBeDefined()
+
+    proposeId = tx.events.Propose.returnValues.proposeID
+
+    setTimeout(() => {
+      console.log("Waiting 5 seconds")
+      done()
+    }, 5000)
+  })
+
+  it('should vote', async () => {
+    const options: any = { from: web3.defaultAccount as string }
+    options.gas = "250000"
+
+    const tx = await instance.contracts.governance.vote(proposeId, web3.utils.fromAscii("VOTE_YES"), options)
+
+    expect(tx.events.Vote).toBeDefined()
   })
 })
