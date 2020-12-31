@@ -1,8 +1,8 @@
 import Web3 from 'web3'
-import { Contract, SendOptions } from 'web3-eth-contract'
+import { Contract, EventOptions, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
 import * as BN from 'bn.js'
-import { IGlobalPool, IAnkrETH } from './interfaces'
+import { IGlobalPool, IAnkrETH, SubscribeEvent, IGovernance } from './interfaces'
 import { GlobalPoolEvents } from './events'
 
 export abstract class BaseContract {
@@ -121,9 +121,33 @@ export class GlobalPool extends BaseContract implements IGlobalPool {
 
 }
 
+export class Governance extends BaseContract implements IGovernance {
+
+  readonly events: GlobalPoolEvents
+
+  constructor(web3: Web3, network: string) {
+    super(web3, network)
+
+    this.events = new GlobalPoolEvents(this.getContract())
+  }
+
+  getName(): string {
+    return 'Governance'
+  }
+
+  vote(proposalId: string, vote: string, options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract().methods.vote(proposalId, vote).send(options)
+  }
+
+  propose(timeSpan: number, topic: string, content: string, options?: SendOptions): PromiEvent<Contract> {
+    return this.getContract().methods.propose(timeSpan, topic, content).send(options)
+  }
+}
+
 export default class ContractFactory {
   readonly ankrETH: AnkrETH
   readonly globalPool: GlobalPool
+  readonly governance: Governance
 
   constructor(web3: Web3, chain: string | number) {
     switch (String(chain)) {
@@ -137,5 +161,6 @@ export default class ContractFactory {
 
     this.ankrETH = new AnkrETH(web3, String(chain))
     this.globalPool = new GlobalPool(web3, String(chain))
+    this.governance = new Governance(web3, String(chain))
   }
 }
