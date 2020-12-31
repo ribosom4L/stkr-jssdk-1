@@ -28,7 +28,7 @@ export abstract class BaseContract {
     if (this.web3ContractInstance) return this.web3ContractInstance
 
     const address = this.addresses[contractName]
-    // TODO Should be require in build, not in realtime
+    // TODO Should be required in build, not in runtime. Otherwise `resolveJsonModule` doesn't work as expected
     this.web3ContractInstance = new this.web3.eth.Contract(require('../contract/' + contractName + '.json'), address)
 
     return this.web3ContractInstance
