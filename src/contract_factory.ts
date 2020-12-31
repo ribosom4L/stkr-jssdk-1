@@ -1,8 +1,8 @@
 import Web3 from 'web3'
-import { Contract, EventOptions, SendOptions } from 'web3-eth-contract'
+import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
 import * as BN from 'bn.js'
-import { IGlobalPool, IAnkrETH, SubscribeEvent, IGovernance } from './interfaces'
+import { IAnkrETH, IGlobalPool, IGovernance } from './interfaces'
 import { GlobalPoolEvents } from './events'
 
 export abstract class BaseContract {
@@ -28,6 +28,7 @@ export abstract class BaseContract {
     if (this.web3ContractInstance) return this.web3ContractInstance
 
     const address = this.addresses[contractName]
+    // TODO Should be require in build, not in realtime
     this.web3ContractInstance = new this.web3.eth.Contract(require('../contract/' + contractName + '.json'), address)
 
     return this.web3ContractInstance

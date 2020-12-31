@@ -1,13 +1,10 @@
 import Stkr from '../src'
 import Web3 from 'web3'
-import { Contract } from 'web3-eth-contract'
-import addresses from '../contract/addresses/goerli.json'
-import GlobalPool from '../contract/GlobalPool.json'
-import Governance from '../contract/Governance.json'
-import AETH from '../contract/AETH.json'
-import ANKR from '../contract/ANKR.json'
-import AnkrDeposit from '../contract/AnkrDeposit.json'
-import ContractFactory  from '../src/contract_factory'
+import addresses from '../src/contracts/addresses/goerli.json'
+import GlobalPool from '../src/contracts/GlobalPool.json'
+import Governance from '../src/contracts/Governance.json'
+import AETH from '../src/contracts/AETH.json'
+import ANKR from '../src/contracts/ANKR.json'
 
 jest.setTimeout(180000)
 
