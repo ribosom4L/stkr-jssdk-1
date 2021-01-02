@@ -14,7 +14,7 @@ export default class Stkr {
   }
 
   // FIXME:
-  // These can be reached from contracts with:
+  // Run from contracts with:
   // this.contracts.governance.vote(...)
 
   // /**
