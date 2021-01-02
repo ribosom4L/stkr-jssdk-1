@@ -1,5 +1,5 @@
 import { BlockchainNetworkId, IAnkrETH } from '../types'
-import * as AETHAbi from './abi/AETH.json'
+import AETHAbi from './abi/AETH.json'
 import Web3 from 'web3'
 import * as BN from 'bn.js'
 import { BaseContract } from './BaseContract'

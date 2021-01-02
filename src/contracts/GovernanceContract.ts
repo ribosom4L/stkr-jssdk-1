@@ -1,6 +1,6 @@
 import { BlockchainNetworkId, IGovernance } from '../types'
 import { GlobalPoolEvents } from '../events'
-import * as GovernanceAbi from './abi/Governance.json'
+import GovernanceAbi from './abi/Governance.json'
 import Web3 from 'web3'
 import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
