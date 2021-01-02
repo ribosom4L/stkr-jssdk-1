@@ -1,21 +1,16 @@
 import { BlockchainNetworkId, IAnkrETH } from '../types'
-import * as AETHAbi from './abi/AETH.json'
+import AETHAbi from './abi/AETH.json'
 import Web3 from 'web3'
 import * as BN from 'bn.js'
 import { BaseContract } from './BaseContract'
+import { ERC20Contract } from './ERC20Contract'
 
-export class AETHContract extends BaseContract implements IAnkrETH {
+export class AETHContract extends ERC20Contract implements IAnkrETH {
   abi = AETHAbi as any
+  name = "AETH"
 
   constructor(web3: Web3, network: BlockchainNetworkId) {
     super(web3, network)
-  }
-
-  /**
-   * Name of contract
-   */
-  public getName(): string {
-    return 'AETH'
   }
 
   /**
@@ -29,13 +24,5 @@ export class AETHContract extends BaseContract implements IAnkrETH {
 
   async ratio(): Promise<BN> {
     return this.getContract().methods.ratio().call()
-  }
-
-  balanceOf(address: string): Promise<BN> {
-    return this.getContract().methods.balanceOf(address).call()
-  }
-
-  totalSupply(): Promise<BN> {
-    return this.getContract().methods.totalSupply().call()
   }
 }

@@ -13,11 +13,23 @@ export default class Stkr {
     // TODO: Api implementation
   }
 
-  vote(proposalId: string, vote: string, options?: SendOptions) {
-    return this.contracts.governance.getContract().methods.vote(proposalId, vote).send(options)
-  }
+  // FIXME:
+  // These can be reached from contracts with:
+  // this.contracts.governance.vote(...)
 
-  propose(timeSpan: number, topic: string, content: string, options?: SendOptions) {
-    return this.contracts.governance.getContract().methods.propose(timeSpan, topic, content).send(options)
-  }
+  // /**
+  //  *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
+  //  */
+  // vote(proposalId: string, vote: string, options?: SendOptions): Promise<any> {
+  //   return this.contracts.governance.getContract().methods.vote(proposalId, vote).send(options)
+  // }
+  //
+  // /**
+  //  * @param timeSpan 1-7 days
+  //  */
+  // propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
+  //   return this.contracts.governance.getContract().methods.propose(timeSpan, topic, content).send(options)
+  // }
 }
+
+export * from './types';

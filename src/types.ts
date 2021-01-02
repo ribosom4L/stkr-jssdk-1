@@ -28,6 +28,16 @@ export interface IGovernance {
   vote(proposalId: string, vote: string, options?: SendOptions): PromiEvent<Contract>
 }
 
+export interface IERC20 {
+  totalSupply(): Promise<BN>
+
+  balanceOf(address: string): Promise<BN>
+
+  allowance(owner: string, spender: string): Promise<BN>
+
+  approve(address: string, amount: string, options?: SendOptions): PromiEvent<Contract>
+}
+
 export interface ContractEvent<T> extends EventLog {
   returnValues: T
 }
@@ -107,6 +117,13 @@ export interface Propose {
   topic: string,
   content: string,
   timeSpan: number
+}
+
+export interface Proposal {
+  yes: BN,
+  no: BN,
+  topic: string,
+  content: string
 }
 
 export enum BlockchainNetworkId {

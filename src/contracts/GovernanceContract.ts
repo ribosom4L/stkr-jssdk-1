@@ -1,6 +1,6 @@
-import { BlockchainNetworkId, IGovernance } from '../types'
+import { BlockchainNetworkId, IGovernance, Proposal } from '../types'
 import { GlobalPoolEvents } from '../events'
-import * as GovernanceAbi from './abi/Governance.json'
+import GovernanceAbi from './abi/Governance.json'
 import Web3 from 'web3'
 import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
@@ -26,5 +26,9 @@ export class GovernanceContract extends BaseContract implements IGovernance {
 
   propose(timeSpan: number, topic: string, content: string, options?: SendOptions): PromiEvent<Contract> {
     return this.getContract().methods.propose(timeSpan, topic, content).send(options)
+  }
+
+  proposal(): Promise<Proposal> {
+    return this.getContract().methods.proposal().call()
   }
 }

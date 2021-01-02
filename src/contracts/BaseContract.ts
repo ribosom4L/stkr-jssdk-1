@@ -2,8 +2,8 @@ import { AbiItem } from 'web3-utils'
 import Web3 from 'web3'
 import { BlockchainNetworkId } from '../types'
 import { Contract } from 'web3-eth-contract'
-import * as mainnetAddresses from './addresses/mainnet.json'
-import * as goerliAddresses from './addresses/goerli.json'
+import mainnetAddresses from './addresses/mainnet.json'
+import goerliAddresses from './addresses/goerli.json'
 
 const addressesConfig = {
   [BlockchainNetworkId.mainnet]: mainnetAddresses,
@@ -19,7 +19,7 @@ export abstract class BaseContract {
   constructor(protected web3: Web3, networkId: BlockchainNetworkId) {
     const addresses = addressesConfig[networkId]
 
-    if (addresses) {
+    if (!addresses) {
       throw new Error('Contract addresses are not defined')
     }
 
@@ -37,6 +37,8 @@ export abstract class BaseContract {
     }
 
     const address = this.addresses[contractName]
+
+    console.log('this.abi', this.abi, address);
 
     this.web3ContractInstance = new this.web3.eth.Contract(this.abi, address)
 

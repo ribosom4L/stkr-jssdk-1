@@ -5,6 +5,7 @@ import GlobalPool from '../src/contracts/abi/GlobalPool.json'
 import Governance from '../src/contracts/abi/Governance.json'
 import AETH from '../src/contracts/abi/AETH.json'
 import ANKR from '../src/contracts/abi/ANKR.json'
+import { BlockchainNetworkId } from '../src/types'
 
 jest.setTimeout(180000)
 
@@ -23,7 +24,7 @@ describe('Stkr Contract Tests', () => {
     web3.eth.accounts.wallet.add(account)
     web3.defaultAccount = account.address
 
-    instance = new Stkr(web3, "5")
+    instance = new Stkr(web3, BlockchainNetworkId.goerli)
 
     // @ts-ignore
     globalPool = new web3.eth.Contract(GlobalPool, addresses.GlobalPool)
