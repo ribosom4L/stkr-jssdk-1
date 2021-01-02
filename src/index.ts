@@ -27,3 +27,6 @@ export default class Stkr {
     return this.contracts.governance.getContract().methods.propose(timeSpan, topic, content).send(options)
   }
 }
+
+export * from './types';
+export * from './utils/getNetworkName'
