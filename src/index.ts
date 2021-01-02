@@ -29,4 +29,3 @@ export default class Stkr {
 }
 
 export * from './types';
-export * from './utils/getNetworkName'
