@@ -24,10 +24,11 @@ export interface IGlobalPool {
 
 export interface IGovernance {
   propose(timeSpan: number, topic: string, content: string, options?: SendOptions): PromiEvent<Contract>
+
   vote(proposalId: string, vote: string, options?: SendOptions): PromiEvent<Contract>
 }
 
-export interface ContractEvent<T> extends EventLog{
+export interface ContractEvent<T> extends EventLog {
   returnValues: T
 }
 
@@ -107,3 +108,24 @@ export interface Propose {
   content: string,
   timeSpan: number
 }
+
+export enum BlockchainNetworkId {
+  mainnet = 1,
+  ropsten = 3,
+  rinkeby = 4,
+  goerli = 5,
+  dev = 2018,
+  classic = 61,
+  mordor = 63,
+  kotti = 6,
+}
+
+export type BlockchainNetworkName =
+  'mainnet' |
+  'ropsten' |
+  'rinkeby' |
+  'goerli' |
+  'dev' |
+  'classic' |
+  'mordor' |
+  'kotti';

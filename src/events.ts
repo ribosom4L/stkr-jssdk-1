@@ -12,7 +12,7 @@ import {
   ProviderToppedUpAnkr,
   ProviderExited,
   SubscribeEvent, ProposalFinished, Vote, Propose
-} from './interfaces'
+} from './types'
 
 export class EventBase {
   constructor(protected contract: Contract) {

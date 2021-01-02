@@ -1,10 +1,10 @@
 import Stkr from '../src'
 import Web3 from 'web3'
 import addresses from '../src/contracts/addresses/goerli.json'
-import GlobalPool from '../src/contracts/GlobalPool.json'
-import Governance from '../src/contracts/Governance.json'
-import AETH from '../src/contracts/AETH.json'
-import ANKR from '../src/contracts/ANKR.json'
+import GlobalPool from '../src/contracts/abi/GlobalPool.json'
+import Governance from '../src/contracts/abi/Governance.json'
+import AETH from '../src/contracts/abi/AETH.json'
+import ANKR from '../src/contracts/abi/ANKR.json'
 
 jest.setTimeout(180000)
 
