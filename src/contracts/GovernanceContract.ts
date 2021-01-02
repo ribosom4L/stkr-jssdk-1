@@ -4,7 +4,7 @@ import * as GovernanceAbi from './abi/Governance.json'
 import Web3 from 'web3'
 import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
-import { BaseContract } from '../contract_factory'
+import { BaseContract } from './BaseContract'
 
 export class GovernanceContract extends BaseContract implements IGovernance {
   readonly events: GlobalPoolEvents

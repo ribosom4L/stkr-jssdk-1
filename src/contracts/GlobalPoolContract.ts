@@ -5,7 +5,7 @@ import Web3 from 'web3'
 import { Contract, SendOptions } from 'web3-eth-contract'
 import { PromiEvent } from 'web3-core'
 import * as BN from 'bn.js'
-import { BaseContract } from '../contract_factory'
+import { BaseContract } from './BaseContract'
 
 export class GlobalPoolContract extends BaseContract implements IGlobalPool {
   readonly events: GlobalPoolEvents
