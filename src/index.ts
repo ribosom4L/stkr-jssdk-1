@@ -16,14 +16,14 @@ export default class Stkr {
   /**
    *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
    */
-  vote(proposalId: string, vote: string, options?: SendOptions) {
+  vote(proposalId: string, vote: string, options?: SendOptions): Promise<any> {
     return this.contracts.governance.getContract().methods.vote(proposalId, vote).send(options)
   }
 
   /**
    * @param timeSpan 1-7 days
    */
-  propose(timeSpan: number, topic: string, content: string, options?: SendOptions) {
+  propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
     return this.contracts.governance.getContract().methods.propose(timeSpan, topic, content).send(options)
   }
 }
