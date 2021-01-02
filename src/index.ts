@@ -14,7 +14,7 @@ export default class Stkr {
   }
 
   /**
-   *  @vote Minimal voting amount is 5M ankr. Minimal amount must be calculated according to deposited amount
+   *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
    */
   vote(proposalId: string, vote: string, options?: SendOptions) {
     return this.contracts.governance.getContract().methods.vote(proposalId, vote).send(options)
