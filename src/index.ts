@@ -27,8 +27,8 @@ export default class Stkr {
     return this.contracts.governance.propose(timeSpan, topic, content, options);
   }
 
-  proposal() {
-    return this.contracts.governance.proposal();
+  proposal(proposalId: string) {
+    return this.contracts.governance.proposal(proposalId);
   }
 }
 

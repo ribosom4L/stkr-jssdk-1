@@ -28,7 +28,7 @@ export class GovernanceContract extends BaseContract implements IGovernance {
     return this.getContract().methods.propose(timeSpan, topic, content).send(options)
   }
 
-  proposal(): Promise<Proposal> {
-    return this.getContract().methods.proposal().call()
+  proposal(proposalId: string): Promise<Proposal> {
+    return this.getContract().methods.proposal(proposalId).call()
   }
 }

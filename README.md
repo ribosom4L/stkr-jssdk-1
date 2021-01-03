@@ -75,4 +75,3 @@ Stake eth for user.
 ```ts
 await stkr.contracts.globalPool.unstake(options: SendOptions)
 ```
-
