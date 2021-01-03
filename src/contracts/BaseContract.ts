@@ -38,8 +38,6 @@ export abstract class BaseContract {
 
     const address = this.addresses[contractName]
 
-    console.log('this.abi', this.abi, address);
-
     this.web3ContractInstance = new this.web3.eth.Contract(this.abi, address)
 
     return this.web3ContractInstance

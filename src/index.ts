@@ -26,6 +26,10 @@ export default class Stkr {
   propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
     return this.contracts.governance.propose(timeSpan, topic, content, options);
   }
+
+  proposal() {
+    return this.contracts.governance.proposal();
+  }
 }
 
 export * from './types';
