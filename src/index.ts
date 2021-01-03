@@ -13,23 +13,19 @@ export default class Stkr {
     // TODO: Api implementation
   }
 
-  // FIXME:
-  // Run from contracts with:
-  // this.contracts.governance.vote(...)
+  /**
+   *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
+  */
+  vote(proposalId: string, vote: string, options?: SendOptions): Promise<any> {
+    return this.contracts.governance.vote(proposalId, vote, options);
+  }
 
-  // /**
-  //  *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
-  //  */
-  // vote(proposalId: string, vote: string, options?: SendOptions): Promise<any> {
-  //   return this.contracts.governance.getContract().methods.vote(proposalId, vote).send(options)
-  // }
-  //
-  // /**
-  //  * @param timeSpan 1-7 days
-  //  */
-  // propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
-  //   return this.contracts.governance.getContract().methods.propose(timeSpan, topic, content).send(options)
-  // }
+  /**
+   * @param timeSpan 1-7 days
+   */
+  propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
+    return this.contracts.governance.propose(timeSpan, topic, content, options);
+  }
 }
 
 export * from './types';
