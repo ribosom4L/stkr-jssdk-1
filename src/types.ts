@@ -123,7 +123,15 @@ export interface Proposal {
   yes: BN,
   no: BN,
   topic: string,
-  content: string
+  content: string,
+  status: BN,
+  endTime: BN
+}
+
+export enum ProposalStatus {
+  VOTING = 1,
+  FAIL = 2,
+  PASS = 3
 }
 
 export enum BlockchainNetworkId {
