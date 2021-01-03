@@ -50,14 +50,14 @@ interface SendOptions {
 Returns claimable aETH balance of given user
 
 ```js
-const claimableBalance = await stkr.claimableBalanceOf(web3.defaultAddress)
+const claimableBalance = await stkr.contracts.globalPool.claimableBalanceOf(web3.defaultAddress)
 ```
 
 #### aETHPrice()
 Returns current aETH price based on Ethereum
 
 ```js
-const price = await stkr.aETHPrice()
+const price = await stkr.contracts.ankrETH.aETHPrice()
 ```
 
 #### stake()
@@ -65,7 +65,7 @@ const price = await stkr.aETHPrice()
 Stake eth for user.
 
 ```ts
-await stkr.stake(options: SendOptions)
+await stkr.contracts.globalPool.stake(options: SendOptions)
 ```
 
 #### unstake()
@@ -73,6 +73,6 @@ await stkr.stake(options: SendOptions)
 Stake eth for user.
 
 ```ts
-await stkr.stake(options: SendOptions)
+await stkr.contracts.globalPool.unstake(options: SendOptions)
 ```
 
