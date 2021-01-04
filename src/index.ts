@@ -30,6 +30,14 @@ export default class Stkr {
   proposal(proposalId: string) {
     return this.contracts.governance.proposal(proposalId);
   }
+
+  /**
+   * Goerli only
+   */
+  faucet() {
+    return this.contracts.ankr.faucet();
+  }
 }
 
 export * from './types';
+export * from './events';
