@@ -157,6 +157,6 @@ export type BlockchainNetworkName =
 
 
 export enum VoteStatus {
-  NO = "0x564f54455f4e4f",
-  YES = "0x564f54455f594553"
+  NO = "0x564f54455f4e4f", // web3.utils.fromAscii("VOTE_NO")
+  YES = "0x564f54455f594553" // web3.utils.fromAscii("VOTE_YES")
 }
