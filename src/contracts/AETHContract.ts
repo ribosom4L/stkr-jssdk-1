@@ -2,7 +2,6 @@ import { BlockchainNetworkId, IAnkrETH } from '../types'
 import AETHAbi from './abi/AETH.json'
 import Web3 from 'web3'
 import * as BN from 'bn.js'
-import { BaseContract } from './BaseContract'
 import { ERC20Contract } from './ERC20Contract'
 
 export class AETHContract extends ERC20Contract implements IAnkrETH {

@@ -112,11 +112,11 @@ export interface Vote {
 }
 
 export interface Propose {
-  proposer: string,
-  ID: string,
-  topic: string,
-  content: string,
-  timeSpan: number
+  proposer: string;
+  proposeID: string;
+  topic: string;
+  content: string;
+  span: number;
 }
 
 export interface Proposal {
