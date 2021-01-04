@@ -2,6 +2,7 @@ import Web3 from 'web3'
 import ContractFactory from './ContractFactory'
 import { BlockchainNetworkId } from './types'
 import { SendOptions } from 'web3-eth-contract'
+import * as BN from 'bn.js'
 
 
 export default class Stkr {
@@ -43,6 +44,14 @@ export default class Stkr {
    */
   faucet5m(options?: SendOptions) {
     return this.contracts.ankr.faucet5m(options);
+  }
+
+  setAnkrAllowance(amount: string, options?: SendOptions) {
+    return this.contracts.ankr.approve(this.contracts.ankr.getAddresses()['AnkrDeposit'], amount, options);
+  }
+
+  getAnkrAllowance(owner: string, spender: string): Promise<BN> {
+    return this.contracts.ankr.allowance(owner, spender);
   }
 }
 

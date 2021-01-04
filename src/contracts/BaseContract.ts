@@ -30,20 +30,27 @@ export abstract class BaseContract {
    * Get given contract for instance network
    */
   public getContract(): Contract {
-    const contractName = this.getName()
-
     if (this.web3ContractInstance) {
       return this.web3ContractInstance
     }
 
-    const address = this.addresses[contractName]
+    const address = this.getContractAddress();
 
     this.web3ContractInstance = new this.web3.eth.Contract(this.abi, address)
 
     return this.web3ContractInstance
   }
 
+  public getContractAddress() {
+    const contractName = this.getName()
+    return this.addresses[contractName];
+  }
+
   protected abstract getName(): string;
+
+  public getAddresses() {
+    return this.addresses;
+  }
 
   public getWeb3ContractInstance(): Contract {
     return this.web3ContractInstance
