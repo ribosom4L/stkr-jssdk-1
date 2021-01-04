@@ -37,6 +37,13 @@ export default class Stkr {
   faucet(options?: SendOptions) {
     return this.contracts.ankr.faucet(options);
   }
+
+  /**
+   * Goerli only
+   */
+  faucet5m(options?: SendOptions) {
+    return this.contracts.ankr.faucet5m(options);
+  }
 }
 
 export * from './types';

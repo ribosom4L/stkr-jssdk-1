@@ -14,7 +14,7 @@ export class ANKRContract extends ERC20Contract {
   }
 
   // Gives 5m ANKR Token
-  faucet5(options?: SendOptions): PromiEvent<Contract> {
+  faucet5m(options?: SendOptions): PromiEvent<Contract> {
     return this.getContract().methods.faucet5m().send(options)
   }
 }
