@@ -154,3 +154,9 @@ export type BlockchainNetworkName =
   'classic' |
   'mordor' |
   'kotti';
+
+
+export enum VoteStatus {
+  NO = "0x564f54455f4e4f",
+  YES = "0x564f54455f594553"
+}
