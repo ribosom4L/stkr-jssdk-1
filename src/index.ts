@@ -34,8 +34,8 @@ export default class Stkr {
   /**
    * Goerli only
    */
-  faucet() {
-    return this.contracts.ankr.faucet();
+  faucet(options?: SendOptions) {
+    return this.contracts.ankr.faucet(options);
   }
 }
 

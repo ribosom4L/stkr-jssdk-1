@@ -1,13 +1,10 @@
-import { BlockchainNetworkId, IAnkrETH, IERC20 } from '../types'
-import * as ERC20Abi from './abi/ANKR.json'
-import Web3 from 'web3'
+import { IERC20 } from '../types'
 import * as BN from 'bn.js'
 import { BaseContract } from './BaseContract'
 import { PromiEvent } from 'web3-core'
 import { Contract, SendOptions } from 'web3-eth-contract'
 
 export class ERC20Contract extends BaseContract implements IERC20 {
-  abi = ERC20Abi as any
   protected name: string = "ERC20"
 
   /**
