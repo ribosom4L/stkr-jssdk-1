@@ -119,13 +119,19 @@ export interface Propose {
   span: number;
 }
 
+export enum ProposalStatus {
+  Voting,
+  Fail,
+  Passed
+}
+
 export interface Proposal {
-  yes: BN,
-  no: BN,
+  yes: string,
+  no: string,
   topic: string,
   content: string,
-  status: BN,
-  endTime: BN
+  status: ProposalStatus,
+  endTime: string
 }
 
 export enum ProposalStatus {
