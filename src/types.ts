@@ -155,7 +155,6 @@ export type BlockchainNetworkName =
   'mordor' |
   'kotti';
 
-
 export enum VoteStatus {
   NO = "0x564f54455f4e4f", // web3.utils.fromAscii("VOTE_NO")
   YES = "0x564f54455f594553" // web3.utils.fromAscii("VOTE_YES")
