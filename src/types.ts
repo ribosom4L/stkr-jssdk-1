@@ -131,6 +131,7 @@ export interface Proposal {
   topic: string,
   content: string,
   status: ProposalStatus,
+  startTime: string
   endTime: string
 }
 
