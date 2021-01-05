@@ -22,7 +22,7 @@ export default class Stkr {
   }
 
   /**
-   * @param timeSpan 1-7 days
+   * @param timeSpan 3-7 days
    */
   propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
     return this.contracts.governance.propose(timeSpan, topic, content, options);
