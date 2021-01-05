@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 import ContractFactory from './ContractFactory'
-import { BlockchainNetworkId } from './types'
+import { BlockchainNetworkId, VoteStatus } from './types'
 import { SendOptions } from 'web3-eth-contract'
 import * as BN from 'bn.js'
 
@@ -17,7 +17,7 @@ export default class Stkr {
   /**
    *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
   */
-  vote(proposalId: string, vote: string, options?: SendOptions): Promise<any> {
+  vote(proposalId: string, vote: VoteStatus, options?: SendOptions): Promise<any> {
     return this.contracts.governance.vote(proposalId, vote, options);
   }
 

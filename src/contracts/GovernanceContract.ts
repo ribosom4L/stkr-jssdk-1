@@ -1,4 +1,4 @@
-import { BlockchainNetworkId, IGovernance, Proposal } from '../types'
+import { BlockchainNetworkId, IGovernance, Proposal, VoteStatus } from '../types'
 import { GlobalPoolEvents } from '../events'
 import GovernanceAbi from './abi/Governance.json'
 import Web3 from 'web3'
@@ -20,7 +20,7 @@ export class GovernanceContract extends BaseContract implements IGovernance {
     return 'Governance'
   }
 
-  vote(proposalId: string, vote: string, options?: SendOptions): PromiEvent<Contract> {
+  vote(proposalId: string, vote: VoteStatus, options?: SendOptions): PromiEvent<Contract> {
     return this.getContract().methods.vote(proposalId, vote).send(options)
   }
 
