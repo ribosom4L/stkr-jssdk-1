@@ -47,11 +47,15 @@ export default class Stkr {
   }
 
   setAnkrAllowance(amount: string, options?: SendOptions) {
-    return this.contracts.ankr.approve(this.contracts.ankr.getAddresses()['AnkrDeposit'], amount, options);
+    return this.contracts.ankr.approve(this.contracts.ankr.getAddresses()['Governance'], amount, options);
   }
 
   getAnkrAllowance(owner: string, spender: string): Promise<BN> {
     return this.contracts.ankr.allowance(owner, spender);
+  }
+
+  getAnkrGovernanceAllowance(owner: string): Promise<BN> {
+    return this.contracts.ankr.allowance(owner, this.contracts.ankr.getAddresses()['Governance']);
   }
 }
 
