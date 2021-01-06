@@ -136,6 +136,7 @@ export interface Proposal {
 }
 
 export enum ProposalStatus {
+  WAITING = 0,
   VOTING = 1,
   FAIL = 2,
   PASS = 3
