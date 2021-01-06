@@ -33,7 +33,7 @@ export interface IERC20 {
 
   balanceOf(address: string): Promise<BN>
 
-  allowance(owner: string, spender: string): Promise<BN>
+  allowance(owner: string, spender: string): Promise<string>
 
   approve(address: string, amount: string, options?: SendOptions): PromiEvent<Contract>
 }

@@ -37,7 +37,7 @@ export class ERC20Contract extends BaseContract implements IERC20 {
    * @param owner
    * @param spender
    */
-  allowance(owner: string, spender:string): Promise<BN> {
+  allowance(owner: string, spender:string): Promise<string> {
     return this.getContract().methods.allowance(owner, spender).call()
   }
 }
