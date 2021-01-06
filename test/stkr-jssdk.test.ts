@@ -5,7 +5,7 @@ import GlobalPool from '../src/contracts/abi/GlobalPool.json'
 import Governance from '../src/contracts/abi/Governance.json'
 import AETH from '../src/contracts/abi/AETH.json'
 import ANKR from '../src/contracts/abi/ANKR.json'
-import { BlockchainNetworkId } from '../src/types'
+import { BlockchainNetworkId } from '../src'
 
 jest.setTimeout(180000)
 
@@ -88,7 +88,7 @@ describe('Stkr Contract Tests', () => {
     // claim ankr
     await ankr.methods.faucet5m().send(options)
     await ankr.methods.faucet().send(options)
-    await ankr.methods.approve(addresses.AnkrDeposit, web3.utils.toWei("5100000")).send(options)
+    await ankr.methods.approve(addresses.Governance, web3.utils.toWei("5100000")).send(options)
 
     // options.gas = await governance.methods.propose(4 * 24 * 60 * 60, topic, content)
 
