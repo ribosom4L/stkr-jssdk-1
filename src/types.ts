@@ -120,9 +120,10 @@ export interface Propose {
 }
 
 export enum ProposalStatus {
-  Voting,
-  Fail,
-  Passed
+  WAITING = 0,
+  VOTING = 1,
+  FAIL = 2,
+  PASS = 3
 }
 
 export interface Proposal {
@@ -133,13 +134,6 @@ export interface Proposal {
   status: ProposalStatus,
   startTime: string
   endTime: string
-}
-
-export enum ProposalStatus {
-  WAITING = 0,
-  VOTING = 1,
-  FAIL = 2,
-  PASS = 3
 }
 
 export enum BlockchainNetworkId {
