@@ -12,50 +12,6 @@ export default class Stkr {
 
     // TODO: Api implementation
   }
-
-  /**
-   *  @vote Minimal voting amount is 5M Ankr. Minimal amount must be calculated according to deposited amount
-  */
-  vote(proposalId: string, vote: VoteStatus, options?: SendOptions): Promise<any> {
-    return this.contracts.governance.vote(proposalId, vote, options);
-  }
-
-  /**
-   * @param timeSpan 3-7 days
-   */
-  propose(timeSpan: number, topic: string, content: string, options?: SendOptions): Promise<any> {
-    return this.contracts.governance.propose(timeSpan, topic, content, options);
-  }
-
-  getProposalInfo(proposalId: string) {
-    return this.contracts.governance.proposal(proposalId);
-  }
-
-  /**
-   * Goerli only
-   */
-  faucet(options?: SendOptions) {
-    return this.contracts.ankr.faucet(options);
-  }
-
-  /**
-   * Goerli only
-   */
-  faucet5m(options?: SendOptions) {
-    return this.contracts.ankr.faucet5m(options);
-  }
-
-  setAnkrAllowance(amount: string, options?: SendOptions) {
-    return this.contracts.ankr.approve(this.contracts.ankr.getAddresses()['Governance'], amount, options);
-  }
-
-  getAnkrAllowance(owner: string, spender: string) {
-    return this.contracts.ankr.allowance(owner, spender);
-  }
-
-  getAnkrGovernanceAllowance(owner: string) {
-    return this.contracts.ankr.allowance(owner, this.contracts.ankr.getAddresses()['Governance']);
-  }
 }
 
 export * from './types';

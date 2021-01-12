@@ -1,13 +1,12 @@
-import Stkr from '../src'
+import Stkr, { BlockchainNetworkId, VoteStatus } from '../src'
 import Web3 from 'web3'
 import addresses from '../src/contracts/addresses/goerli.json'
 import GlobalPool from '../src/contracts/abi/GlobalPool.json'
 import Governance from '../src/contracts/abi/Governance.json'
 import AETH from '../src/contracts/abi/AETH.json'
 import ANKR from '../src/contracts/abi/ANKR.json'
-import { BlockchainNetworkId } from '../src'
 
-jest.setTimeout(180000)
+jest.setTimeout(200000)
 
 const testKey = '80e14c7c1d43c0293e4b6dcf8682b87c28832ab6b3d13ea4c4813518614865be'
 const api = 'https://eth-goerli-01.dccn.ankr.com'
@@ -81,35 +80,63 @@ describe('Stkr Contract Tests', () => {
   let proposeId
 
   it('should propose', async (done) => {
-    const topic = "test topic"
-    const content = "Test content"
-    const options: any = { from: web3.defaultAccount as string, gas: "500000" }
+    try {
+      const topic = 'test topic'
+      const content = 'Test content'
+      const options: any = { from: web3.defaultAccount as string, gas: '500000' }
 
-    // claim ankr
-    await ankr.methods.faucet5m().send(options)
-    await ankr.methods.faucet().send(options)
-    await ankr.methods.approve(addresses.Governance, web3.utils.toWei("5100000")).send(options)
+      // claim ankr
+      await ankr.methods.faucet5m().send(options)
+      await ankr.methods.faucet().send(options)
+      await ankr.methods.approve(addresses.Governance, web3.utils.toWei('5100000')).send(options)
 
-    // options.gas = await governance.methods.propose(4 * 24 * 60 * 60, topic, content)
+      // options.gas = await governance.methods.propose(4 * 24 * 60 * 60, topic, content)
 
-    const tx = await instance.contracts.governance.propose(4 * 24 * 60 * 60, topic, content, options)
+      const tx = await instance.contracts.governance.propose(4 * 24 * 60 * 60, topic, content, options)
 
-    expect(tx.events.Propose).toBeDefined()
+      expect(tx.events.Propose).toBeDefined()
 
-    proposeId = tx.events.Propose.returnValues.proposeID
+      proposeId = tx.events.Propose.returnValues.proposeID
 
-    setTimeout(() => {
-      console.log("Waiting 5 seconds")
-      done()
-    }, 5000)
+      setTimeout(() => {
+        console.log('Waiting 5 seconds')
+        done()
+      }, 5000)
+    }
+      // tslint:disable-next-line:no-empty
+    catch (e) {}
+    done()
   })
 
-  it('should vote', async () => {
-    const options: any = { from: web3.defaultAccount as string }
-    options.gas = "250000"
+  it('should vote', async (done) => {
+    try {
+      await advanceTime(3600 * 24 * 6)
+      const options: any = { from: web3.defaultAccount as string }
+      options.gas = '250000'
 
-    const tx = await instance.contracts.governance.vote(proposeId, web3.utils.fromAscii("VOTE_YES"), options)
+      const tx = await instance.contracts.governance.vote(proposeId, VoteStatus.YES, options)
 
-    expect(tx.events.Vote).toBeDefined()
+      expect(tx.events.Vote).toBeDefined()
+      // tslint:disable-next-line:no-empty
+    } catch (e) {
+    }
+    done()
   })
+
+  function advanceTime(time) {
+    return new Promise((resolve, reject) => {
+      // @ts-ignore
+      web3.currentProvider.send({
+        jsonrpc: '2.0',
+        method: 'evm_increaseTime',
+        params: [time],
+        id: new Date().getTime()
+      }, (err, result) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(result)
+      })
+    })
+  }
 })
